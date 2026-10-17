@@ -1,0 +1,85 @@
+% Example content for a fictional person. Every name, school, company, number
+% and link below is made up. Shared by serif.tex and sans.tex.
+
+\name{ALEX CHEN}
+
+\basicInfo{%
+  \href{mailto:alex.chen@example.com}{alex.chen@example.com}\sep
+  \href{tel:555-010-0142}{(555) 010-0142}\sep
+  San Francisco, CA\sep
+  \href{https://github.com/example}{github.com/example}\sep
+  \href{https://example.com}{example.com}%
+}
+
+\section{SUMMARY}
+\resumeentry{AI engineer with a statistics and distributed-systems background, 3 years taking LLM features from prototype to production: retrieval, agents, and the evals that keep them honest. M.S. @ Lakeside University.}
+
+\section{EDUCATION}
+
+\datedsubsection{\textbf{Lakeside University}, M.S. in Computer Science}{Aug 2022 – May 2024}
+\begin{plainlist}
+\item GPA 3.9/4.0 · Distributed Systems · Information Retrieval · Machine Learning · Teaching Assistant for Databases
+\end{plainlist}
+
+\datedsubsection{\textbf{Riverside Institute of Technology}, B.S. in Statistics}{Sep 2018 – Jun 2022}
+\begin{plainlist}
+\item GPA 3.8/4.0 · Dean's List (6 semesters) · Undergraduate research in Bayesian time-series forecasting
+\end{plainlist}
+
+\section{WORK EXPERIENCE}
+
+\datedsubsection{\textbf{Northwind Labs}}{Jul 2024 – Present}
+\datedline{\role{AI Engineer}}{\textit{San Francisco, CA}}
+\begin{itemize}
+\item Built a tool-calling agent runtime with retries and idempotent steps, raising end-to-end task success from 61\% to 84\%
+\item Designed an offline eval suite of 1,200 graded traces with an LLM judge, catching 9 regressions before they shipped
+\item Cut median agent latency 38\% by parallelizing independent tool calls and caching retrieval results per conversation
+\item Moved 14 internal tools behind a shared MCP server, so product teams add agent capabilities without runtime changes
+\item Introduced a versioned prompt registry with staged rollouts and A/B gates, halving the time to ship a prompt change
+\end{itemize}
+
+\datedsubsection{\textbf{Helio Health}}{May 2023 – Aug 2023}
+\datedline{\role{Machine Learning Intern}}{\textit{Remote}}
+\begin{itemize}
+\item Shipped hybrid BM25 and dense retrieval over 2M clinical notes, lifting top-5 recall from 71\% to 89\% on a labeled set
+\item Fine-tuned a cross-encoder reranker with LoRA on 40k physician queries, improving answer precision by 14 points
+\item Added a PHI redaction pass using spaCy rules and a small NER model, clearing HIPAA review before the hospital pilot
+\end{itemize}
+
+\datedsubsection{\textbf{Cobalt Analytics}}{Jun 2021 – Jul 2022}
+\datedline{\role{Software Engineer}}{\textit{Austin, TX}}
+\begin{itemize}
+\item Migrated nightly batch ETL to Kafka streaming jobs, cutting data freshness from 24 hours to under 10 minutes for clients
+\item Added data-quality checks and on-call alerting in Grafana, reducing customer-reported data incidents by 70\% in 2 months
+\item Rewrote the slowest dashboard queries as PostgreSQL materialized views, dropping p95 page load time from 9s to 1.2s
+\end{itemize}
+
+\datedsubsection{\textbf{Riverside Institute of Technology}}{Jan 2020 – May 2021}
+\datedline{\role{Undergraduate Research Assistant}}{\textit{Riverside, CA}}
+\begin{itemize}
+\item Built a hierarchical Bayesian model in Stan for regional power demand, beating the ARIMA baseline by 18\% on MAPE
+\item Co-authored a workshop paper on calibrated uncertainty for short-term load forecasts, presented at a 2021 symposium
+\item Packaged the forecasting pipeline as an open-source R library with 40 unit tests, reused by two later student theses
+\end{itemize}
+
+\section{PROJECTS}
+\begin{tabularx}{\textwidth}{@{} l X @{}}
+\projectlink{https://github.com/example/tracelens}{TraceLens} & \resumeentry{Open-source viewer for agent traces with diffing across runs and per-step cost breakdowns} \\
+\projectlink{https://github.com/example/quill}{Quill} & \resumeentry{Writing assistant that grounds every suggestion in cited sources, built on a local vector store} \\
+\projectlink{https://github.com/example/promptdiff}{PromptDiff} & \resumeentry{CLI that regression-tests prompts against golden outputs in CI, used by three open-source projects} \\
+\end{tabularx}
+
+\section{TALKS \& AWARDS}
+\begin{plainlist}
+\item Speaker, Bay Area LLMOps Meetup (2025): ``Evals before vibes: grading agent traces with an LLM judge''
+\item First place, Lakeside University AI Hackathon (2023) · Best Use of Retrieval, Open Data Hack Weekend (2022)
+\item Volunteer mentor, Code Forward fellowship (2024 – present): coaching first-generation students through ML projects
+\end{plainlist}
+
+\section{SKILLS}
+\begin{tabularx}{\textwidth}{@{} l X @{}}
+\textbf{Languages} & \resumeentry{Python, TypeScript, Go, SQL, Bash} \\
+\textbf{Infrastructure} & \resumeentry{AWS, Docker, Kubernetes, Terraform, Kafka, PostgreSQL, Redis} \\
+\textbf{Data} & \resumeentry{pandas, NumPy, scikit-learn, Stan, Spark, Airflow, dbt} \\
+\textbf{AI \& LLMOps} & \resumeentry{PyTorch, LangGraph, vLLM, LoRA, RAG, LLM-as-judge evals, OpenTelemetry} \\
+\end{tabularx}

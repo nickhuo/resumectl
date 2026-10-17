@@ -1,0 +1,9 @@
+node_modules/
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.rmlayout
+*.resume-mode.json
+output/
+.DS_Store

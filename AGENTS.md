@@ -1,0 +1,23 @@
+# AGENTS.md
+
+## Resume layout
+
+- Bullet 排版以 1–2 行且末行足够饱满为目标，按实际渲染结果检查。
+
+## Agent skills
+
+### Resume writing
+
+Use `skills/resume-methodology/SKILL.md` for résumé writing, tailoring and content review. Its workflow uses the current `resume-mode` CLI and rendered quality gates.
+
+### Issue tracker
+
+Issues live in GitHub Issues for `nickhuo/latex-resume-kit` (via the `gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Uses the default label names (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `GLOSSARY.md` plus `docs/adr/` at the repo root. See `docs/agents/domain.md`.

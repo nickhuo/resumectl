@@ -1,0 +1,50 @@
+{
+  "name": "resume-mode",
+  "version": "0.1.0",
+  "description": "Clean LaTeX résumé templates and PDF quality checks for coding-agent workflows.",
+  "license": "MIT",
+  "type": "module",
+  "module": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./template/*": "./template/*",
+    "./config-schema": "./resume.config.schema.json"
+  },
+  "bin": {
+    "resume-mode": "./src/cli.ts"
+  },
+  "files": [
+    "src",
+    "template",
+    "docs",
+    "GLOSSARY.md",
+    "resume.config.yaml",
+    "resume.config.schema.json",
+    "README.md",
+    "LICENSE",
+    "skills"
+  ],
+  "keywords": [
+    "resume",
+    "cv",
+    "latex",
+    "xelatex",
+    "bun",
+    "coding-agent"
+  ],
+  "engines": {
+    "bun": ">=1.3"
+  },
+  "scripts": {
+    "resume": "bun src/cli.ts",
+    "example": "bun src/cli.ts build examples/serif.tex && bun src/cli.ts build examples/sans.tex",
+    "gen-metrics": "bun scripts/gen-metrics.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "verify": "bun run typecheck && bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,74 @@
+% Loaded by resume.cls only for CLI builds. Zero-width position records are
+% written at shipout; paragraph line counts come from TeX's actual line breaker.
+% Paragraph hooks: https://www.latex-project.org/help/documentation/ltpara-doc.pdf
+\newwrite\resume@measurestream
+\immediate\openout\resume@measurestream=\jobname.rmlayout
+\newcount\resume@itemid
+\newcount\resume@paragraphid
+\newif\ifresume@entry
+\def\resume@beginentry{%
+  \global\advance\resume@itemid by1
+  \global\resume@paragraphid=0
+  \immediate\write\resume@measurestream{B|\the\resume@itemid|\expandafter\detokenize\expandafter{\resume@sectiontitle}}%
+}
+\RenewDocumentCommand\resumeentry{+m}{%
+  \par
+  \begingroup
+  \ifresume@entry\PackageError{resume}{Do not nest resumeentry}{Use one resumeentry per paragraph or table description.}\fi
+  \ifnum\@listdepth>0\PackageError{resume}{Do not use resumeentry inside a list}{List items are measured automatically.}\fi
+  \resume@entrytrue\resume@beginentry
+  #1\par
+  \endgroup
+}
+\def\resume@ifmeasuring#1{%
+  \ifresume@entry #1\else
+    \ifnum\@itemdepth=1\ifnum\@listdepth=1 #1\fi\fi
+  \fi
+}
+\def\resume@sectiontitle{}
+\NewCommandCopy\resume@originalsection\section
+\RenewDocumentCommand\section{s o m}{%
+  \par
+  \gdef\resume@sectiontitle{#3}%
+  \IfBooleanTF{#1}{\resume@originalsection*{#3}}{%
+    \IfNoValueTF{#2}{\resume@originalsection{#3}}{\resume@originalsection[#2]{#3}}}%
+}
+\NewCommandCopy\resume@originalitem\item
+\RenewDocumentCommand\item{o}{%
+  \IfNoValueTF{#1}{\resume@originalitem}{\resume@originalitem[#1]}%
+  \ifnum\@itemdepth=1\ifnum\@listdepth=1
+    \resume@beginentry
+  \fi\fi
+}
+\def\resume@position#1{%
+  \pdfsavepos
+  % Freeze the IDs now, but expand positions only when this node ships out.
+  \edef\resume@writeposition{\noexpand\write\resume@measurestream{#1|\the\resume@itemid|\the\resume@paragraphid|\noexpand\the\noexpand\pdflastxpos|\noexpand\the\noexpand\pdflastypos}}%
+  \resume@writeposition
+}
+\AddToHook{para/begin}{%
+  \resume@ifmeasuring{%
+    \global\advance\resume@paragraphid by1
+    \immediate\write\resume@measurestream{P|\the\resume@itemid|\the\resume@paragraphid|\number\linewidth}%
+    \resume@position{S}%
+  }%
+}
+\AddToHook{para/end}{%
+  \resume@ifmeasuring{\resume@position{E}}%
+}
+\AddToHook{para/after}{%
+  \resume@ifmeasuring{%
+    % \prevgraf must be read outside \write's expansion context (where it is 0).
+    \edef\resume@lines{\the\prevgraf}%
+    \immediate\write\resume@measurestream{L|\the\resume@itemid|\the\resume@paragraphid|\resume@lines}%
+  }%
+}
+% Nested lists aren't flat resume bullets; fail clearly rather than miscount them.
+\def\resume@nestedlist{%
+  \ifresume@entry\PackageError{resume}{Do not nest lists inside resumeentry}{Use a flat list without resumeentry.}\fi
+  \ifnum\@itemdepth>0\immediate\write\resume@measurestream{U|\the\resume@itemid}\fi
+}
+\AddToHook{env/itemize/begin}{\resume@nestedlist}
+\AddToHook{env/enumerate/begin}{\resume@nestedlist}
+% enumitem lowers its depth before its final \par; finish while still in scope.
+\AddToHook{env/itemize/end}{\par}

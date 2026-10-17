@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ResumeMode configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string", "minLength": 1 },
+    "version": { "const": 1, "default": 1 },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "style": { "enum": ["serif", "sans"], "default": "serif" },
+        "paper": { "enum": ["a4", "letter"], "default": "a4" },
+        "scale": { "type": "number", "minimum": 0.1, "maximum": 4, "default": 0.86, "description": "Sans only: font scale relative to the body size." },
+        "tracking": { "type": "number", "minimum": -10, "maximum": 20, "default": -1.5, "description": "Sans only: letter spacing in percent of an em." },
+        "ratio": { "type": "number", "minimum": 1, "maximum": 2, "default": 1.125, "description": "Sans only: type scale ratio." },
+        "margins": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "top": { "$ref": "#/$defs/absoluteLength", "default": "0.4in" },
+            "bottom": { "$ref": "#/$defs/absoluteLength", "default": "0.3in" },
+            "left": { "$ref": "#/$defs/absoluteLength", "default": "0.35in" },
+            "right": { "$ref": "#/$defs/absoluteLength", "default": "0.35in" }
+          }
+        },
+        "bulletSpacing": { "$ref": "#/$defs/length", "default": "0.15em" },
+        "bulletIndent": { "$ref": "#/$defs/length", "default": "1.5pc" },
+        "sectionSpacing": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Space before/after section headings. Defaults: serif *1/*1; sans *2/*0.8.",
+          "properties": {
+            "before": { "$ref": "#/$defs/sectionLength" },
+            "after": { "$ref": "#/$defs/sectionLength" }
+          }
+        }
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "section": { "type": "string", "minLength": 1, "description": "Optional selector: check only this section. Omit to check all configured sections; without a sections map, falls back to WORK EXPERIENCE." },
+        "maxPages": { "type": "integer", "minimum": 1, "maximum": 100, "default": 1 },
+        "bullets": { "$ref": "#/$defs/contentChecks", "description": "Shared defaults for section length checks." }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "propertyNames": { "type": "string", "minLength": 1 },
+      "description": "Policies keyed by rendered section title; matching ignores case and repeated whitespace. Only listed sections are checked. Unlisted content is not authorized for AI edits.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "editable": { "type": "boolean", "default": false, "description": "Whether the coding agent may rewrite the section's body entries while preserving facts. Guidance only, not an enforced file lock." },
+          "checks": { "anyOf": [{ "const": false }, { "$ref": "#/$defs/contentChecks" }], "description": "Per-entry length rules, inheriting checks.bullets. Set false to skip this section's length checks; independent of editable." }
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "outDir": { "type": "string", "minLength": 1, "description": "Relative to this config file. Default: next to the source." },
+        "keepLogs": { "type": "boolean", "default": false }
+      }
+    }
+  },
+  "$defs": {
+    "contentChecks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxLines": { "type": "integer", "minimum": 1, "maximum": 100, "description": "Maximum actual rendered lines per entry; inherited default 2." },
+        "minLastLineFill": { "type": "number", "minimum": 0, "maximum": 1, "description": "Minimum fraction of the final line occupied by an entry, including single-line entries. Inherited default 0.8; 0 disables the minimum fill check." }
+      }
+    },
+    "absoluteLength": { "type": "string", "pattern": "^(?:[0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)(?:pt|mm|cm|in|pc)$" },
+    "length": { "type": "string", "pattern": "^(?:[0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)(?:pt|mm|cm|in|pc|em|ex)$" },
+    "sectionLength": { "anyOf": [{ "$ref": "#/$defs/length" }, { "type": "string", "pattern": "^\\*(?:[0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)$" }] }
+  }
+}
