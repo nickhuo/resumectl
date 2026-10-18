@@ -1,9 +1,5 @@
 # AGENTS.md
 
-## Resume layout
-
-- Bullet 排版以 1–2 行且末行足够饱满为目标，按实际渲染结果检查。
-
 ## Agent skills
 
 ### Resume writing
