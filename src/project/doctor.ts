@@ -35,7 +35,7 @@ export async function doctor(): Promise<DoctorReport> {
   } else if (!engine) {
     checks.push({
       name: "TeX engine", ok: false, detail: "neither tectonic nor xelatex found in PATH",
-      fix: "Install Tectonic (brew install tectonic; TeX packages download on first build) or TinyTeX-1 (see docs/setup.md).",
+      fix: "Install Tectonic: brew install tectonic (other systems: https://tectonic-typesetting.github.io/install.html). TeX packages download on the first build.",
     });
   } else {
     for (const command of ["xelatex", "kpsewhich"]) {
@@ -49,7 +49,7 @@ export async function doctor(): Promise<DoctorReport> {
           detail = ok ? `${path}: ${result.stdout.toString().split("\n")[0]}` : `${path}: failed to run`;
         } catch (error) { detail = `${path}: ${(error as Error).message}`; }
       }
-      checks.push({ name: command, ok, detail, fix: "Install TinyTeX-1 or TeX Live and add its bin directory to PATH." });
+      checks.push({ name: command, ok, detail, fix: "Add your TeX distribution's bin directory to PATH, or install Tectonic and set RESUMECTL_ENGINE=tectonic." });
     }
     if (checks.find(c => c.name === "kpsewhich")!.ok) {
       const missing = TEX_FILES.filter(file => {
@@ -59,7 +59,7 @@ export async function doctor(): Promise<DoctorReport> {
       checks.push({
         name: "TeX dependencies", ok: missing.length === 0,
         detail: missing.length ? `missing: ${missing.join(", ")}` : `${TEX_FILES.length} required files found`,
-        fix: "Install the README's TeX packages; with TinyTeX-1: tlmgr install titlesec enumitem pgf tex-gyre.",
+        fix: "Run tlmgr install titlesec enumitem pgf tex-gyre, or install Tectonic and set RESUMECTL_ENGINE=tectonic.",
       });
     }
   }

@@ -97,7 +97,7 @@ Run `bunx resumectl@0.1.0 doctor` before writing anything, and fix failures with
 
 - **`bunx` not found, or Bun below 1.3:** ask the user to install Bun (`curl -fsSL https://bun.sh/install | bash`) or run `bun upgrade`.
 - **`TeX engine` missing:** recommend Tectonic, a ~16 MB program that downloads only the TeX packages it needs. Install it with `brew install tectonic` on macOS, or `curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh` elsewhere ([other options](https://tectonic-typesetting.github.io/install.html)). Ask before installing anything.
-- **`TeX dependencies` missing:** the user already has TeX Live or TinyTeX. Run `tlmgr install titlesec enumitem pgf tex-gyre` with their approval.
+- **`TeX dependencies` missing:** the user already has TeX Live or TinyTeX. Run `tlmgr install titlesec enumitem pgf tex-gyre` with their approval, or install Tectonic and prefix commands with `RESUMECTL_ENGINE=tectonic`.
 
 Repeat `doctor` until it passes. With Tectonic, the first build needs network access and can take a few minutes while packages download; run it with a timeout of at least 5 minutes. Later builds take seconds.
 

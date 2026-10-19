@@ -55,7 +55,7 @@ export async function compile(texPath: string, options: string | BuildOptions = 
   // Neither old PDFs nor old measurements may survive a failed compile.
   await Promise.all([pdfPath, metadataPath, measurementPath].map(p => rm(p, { force: true })));
   const engine = texEngine();
-  if (!engine) throw new BuildError("no TeX engine found; install Tectonic (brew install tectonic) or TinyTeX-1, then run resumectl doctor");
+  if (!engine) throw new BuildError("no TeX engine found; install Tectonic (brew install tectonic), then run resumectl doctor");
   const setup = `\\edef\\ResumeFontDir{${texPathLiteral(FONT_DIR + "/")}}\\def\\ResumeMeasure{1}`
     + `\\def\\ResumeConfigOptions{${layoutToClassOptions(config.layout)}}`;
   // Tectonic reads a file rather than TeX code; a same-named wrapper keeps the job name.
