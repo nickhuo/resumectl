@@ -59,7 +59,7 @@ test.skipIf(!Bun.which("tectonic") || !Bun.which("xelatex"))("tectonic renders t
   const tectonic = await built("tectonic");
   expect(tectonic).toHaveLength(27);
   expect(tectonic).toEqual(await built("xelatex"));
-}, 120_000);
+}, 300_000); // a cold Tectonic cache downloads ~45 MB
 
 test("actual wrapping: short/full single lines, sparse/full second lines, three lines and manual breaks", async () => {
   const tex = join(root, "wrapping.tex");

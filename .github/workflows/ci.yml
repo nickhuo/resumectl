@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # XeLaTeX: TinyTeX-1 plus the packages listed in docs/setup.md.
+      - uses: r-lib/actions/setup-tinytex@v2
+        env:
+          TINYTEX_INSTALLER: TinyTeX-1
+      - run: tlmgr install titlesec enumitem pgf tex-gyre
+
+      # Tectonic: lets the engine-parity test compare it against XeLaTeX.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/Tectonic
+          key: tectonic-${{ runner.os }}-v1
+      - name: Install Tectonic
+        run: |
+          cd "$RUNNER_TEMP"
+          curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
+          sudo mv tectonic /usr/local/bin/
+
+      - run: bun install --frozen-lockfile
+      - run: bun run resumectl doctor
+      - run: bun run verify
