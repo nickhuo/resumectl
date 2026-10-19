@@ -8,7 +8,7 @@ Use `skills/resume-methodology/SKILL.md` for résumé writing, tailoring and con
 
 ### Issue tracker
 
-Issues live in GitHub Issues for `nickhuo/latex-resume-kit` (via the `gh` CLI). See `docs/agents/issue-tracker.md`.
+Issues live in GitHub Issues for `nickhuo/resume-mode` (via the `gh` CLI). See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
