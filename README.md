@@ -26,7 +26,7 @@ Paste in a job description and your background. Your coding agent (Claude Code, 
 git clone https://github.com/nickhuo/resumectl.git
 cd resumectl
 bun install
-bun run resume doctor
+bun run resumectl doctor
 ```
 
 **3. Open your coding agent in the folder and ask:**
@@ -54,8 +54,8 @@ You can change any limit per section in `resume.config.yaml`, and mark sections 
 ## Editing by hand
 
 ```bash
-bun run resume init ./my-resume --style sans   # starter resume.tex + config
-bun run resume build ./my-resume/resume.tex    # compile and run every check
+bun run resumectl init ./my-resume --style sans # starter resume.tex + config
+bun run resumectl build ./my-resume/resume.tex  # compile and run every check
 ```
 
 Fonts, sizes, margins and LaTeX commands are documented in [rendering](docs/rendering.md).

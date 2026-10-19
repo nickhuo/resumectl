@@ -89,16 +89,16 @@ Prioritize bullets scoring 8–10. For a score of 7, address the weakest dimensi
 
 ## resumectl workflow
 
-Use `bun run resume` in this repository or `bunx resumectl` after installing the package. Run the following commands from the repository root, replacing the source path with the actual file:
+Use `bun run resumectl` in this repository or `bunx resumectl` after installing the package. Run the following commands from the repository root, replacing the source path with the actual file:
 
 ```bash
-bun run resume doctor
-bun run resume config show path/to/resume.tex --json
-bun run resume build path/to/resume.tex --json
-bun run resume check path/to/resume.tex --json
+bun run resumectl doctor
+bun run resumectl config show path/to/resume.tex --json
+bun run resumectl build path/to/resume.tex --json
+bun run resumectl check path/to/resume.tex --json
 ```
 
-For a new project, run `bun run resume init path/to/new-resume --style sans`, then replace the placeholder content. `init` refuses to overwrite existing résumé source or configuration.
+For a new project, run `bun run resumectl init path/to/new-resume --style sans`, then replace the placeholder content. `init` refuses to overwrite existing résumé source or configuration.
 
 Read `config show` before editing:
 

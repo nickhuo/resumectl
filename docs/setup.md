@@ -15,4 +15,4 @@ TinyTeX-1 already includes `fontspec`, `kvoptions`, `geometry`, `hyperref`, `url
 
 Verified on macOS arm64 with TinyTeX-1 **v2026.10**: both styles compile through the existing CLI and pass all three quality gates, without loading files from another TeX installation. The TeX directory occupies about **287 MiB** after adding the packages above.
 
-Run `bun run resume doctor` from the repository (or `bunx resumectl doctor` after installation) to inspect Bun, XeLaTeX, TeX dependencies and bundled assets. It reports missing dependencies without installing anything. A passing doctor checks availability; build remains the end-to-end compilation check.
+Run `bun run resumectl doctor` from the repository (or `bunx resumectl doctor` after installation) to inspect Bun, XeLaTeX, TeX dependencies and bundled assets. It reports missing dependencies without installing anything. A passing doctor checks availability; build remains the end-to-end compilation check.
