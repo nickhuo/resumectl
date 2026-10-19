@@ -50,6 +50,16 @@
 
 % ---------------------------------------------------------------- fonts
 \RequirePackage{fontspec}
+% Tectonic ships a 2021 LaTeX format. Backport what newer formats provide:
+% \fpeval (kernel since 2022-06), and array's \@finalstrut, which backs up a
+% line when a p-cell ends in vertical mode instead of adding an empty one.
+\IfFormatAtLeastTF{2022-06-01}{}{%
+  \RequirePackage{xfp}%
+  \def\@finalstrut#1{%
+    \unskip
+    \ifhmode\nobreak\else\ifnum\lastnodetype>\m@ne\vskip-\baselineskip\fi\fi
+    \vrule\@width\z@\@height\z@\@depth\dp#1}%
+}
 \def\resume@sans{sans}
 \newif\ifresume@sansstyle
 \ifx\resume@style\resume@sans\resume@sansstyletrue\fi

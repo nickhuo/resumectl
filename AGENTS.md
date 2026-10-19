@@ -4,7 +4,7 @@
 
 ### Resume writing
 
-Use `skills/resume-methodology/SKILL.md` for résumé writing, tailoring and content review. Its workflow uses the current `resumectl` CLI and rendered quality gates.
+Use `skills/resumectl/SKILL.md` for résumé writing, tailoring and content review. Its workflow uses the current `resumectl` CLI and rendered quality gates.
 
 ### Issue tracker
 

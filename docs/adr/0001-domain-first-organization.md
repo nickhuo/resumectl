@@ -23,7 +23,7 @@ Retain `src/cli.ts`, root API exports, `template/`, the config schema and existi
 
 Expose only the essential workflow through `resumectl`: `init`, `doctor`, `config init/show`, `build`, `check`. Add `bun run resumectl` for repository use and `bun run verify` for development checks. `init` refuses overwrites; `doctor` diagnoses without installing dependencies. All workflow commands support JSON. Keep font metric regeneration as a maintenance script.
 
-Store writing instructions in `skills/resume-methodology/SKILL.md` and include `skills/` in the package. Adapt the local methodology to verified candidate facts, per-section edit policy and current rendered quality gates. Remove hard-coded personal claims and obsolete character-count gates. Do not create a second résumé data format.
+Store writing instructions in `skills/resumectl/SKILL.md` and include `skills/` in the package. Adapt the local methodology to verified candidate facts, per-section edit policy and current rendered quality gates. Remove hard-coded personal claims and obsolete character-count gates. Do not create a second résumé data format.
 
 ## Consequences
 

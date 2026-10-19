@@ -18,28 +18,27 @@ Paste in a job description and your background. Your coding agent (Claude Code, 
 
 ## Get started
 
-**1. Install the prerequisites:** [Bun](https://bun.sh) ≥ 1.3 and XeLaTeX. [Setup](docs/setup.md) has a lightweight TeX install (about 290 MB).
+You need [Bun](https://bun.sh) ≥ 1.3. Everything else is set up by your agent.
 
-**2. Clone this repository and check the toolchain:**
+**1. Install the skill:**
 
 ```bash
-git clone https://github.com/nickhuo/resumectl.git
-cd resumectl
-bun install
-bun run resumectl doctor
+npx skills add nickhuo/resumectl
 ```
 
-**3. Open your coding agent in the folder and ask:**
+It works with Claude Code, Codex, Cursor, Copilot and [other agents](https://skills.sh).
 
-> Make me a résumé for this job. Use the sans style.
+**2. Ask your agent:**
+
+> Make me a résumé for this job.
 >
 > Job description: *(paste)*
 >
 > My background: *(paste your old résumé, LinkedIn, notes, project write-ups)*
 
-The agent picks up the writing method from [`AGENTS.md`](AGENTS.md) automatically. It maps the job's requirements to your evidence and asks about any gaps instead of guessing. Then it writes the content, builds the PDF, and revises until the build passes. Your PDF ends up in `my-resume/output/resume.pdf`, or in whichever folder you named.
+On the first run the agent checks your setup. If you have no TeX installed, it asks before installing [Tectonic](https://tectonic-typesetting.github.io), a 16 MB typesetter. The first build then downloads about 45 MB of packages, which takes a couple of minutes; later builds take seconds.
 
-To use the method from a different folder, copy [`skills/resume-methodology/`](skills/resume-methodology/) into your agent's skills directory.
+The agent then maps the job's requirements to your evidence and asks about gaps instead of guessing. It writes the résumé, builds the PDF, and revises until every check passes.
 
 ## What the build checks
 
@@ -54,8 +53,8 @@ You can change any limit per section in `resume.config.yaml`, and mark sections 
 ## Editing by hand
 
 ```bash
-bun run resumectl init ./my-resume --style sans # starter resume.tex + config
-bun run resumectl build ./my-resume/resume.tex  # compile and run every check
+bunx resumectl init ./my-resume --style sans  # starter resume.tex + config
+bunx resumectl build ./my-resume/resume.tex   # PDF in my-resume/output/, all checks
 ```
 
 Fonts, sizes, margins and LaTeX commands are documented in [rendering](docs/rendering.md).

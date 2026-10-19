@@ -47,6 +47,20 @@ for (const style of ["serif", "sans"]) {
   });
 }
 
+test.skipIf(!Bun.which("tectonic") || !Bun.which("xelatex"))("tectonic renders the sans example with the same measurements as xelatex", async () => {
+  const tex = resolve(import.meta.dir, "../../examples/sans.tex");
+  const built = async (engine: string) => {
+    process.env.RESUMECTL_ENGINE = engine;
+    try {
+      const { manifestPath: path } = await compile(tex, join(root, `engine-${engine}`));
+      return (await Bun.file(path).json()).bullets;
+    } finally { delete process.env.RESUMECTL_ENGINE; }
+  };
+  const tectonic = await built("tectonic");
+  expect(tectonic).toHaveLength(27);
+  expect(tectonic).toEqual(await built("xelatex"));
+}, 120_000);
+
 test("actual wrapping: short/full single lines, sparse/full second lines, three lines and manual breaks", async () => {
   const tex = join(root, "wrapping.tex");
   await Bun.write(tex, document([

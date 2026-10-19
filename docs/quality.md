@@ -6,14 +6,14 @@
 
 Measurements are saved next to the PDF as `<name>.resumectl.json`, together with the effective layout and hashes of the source (including `\input` files) and PDF. Keep this file with the PDF for `check`; it survives log cleanup. Missing or mismatched measurements require a rebuild. Flat `itemize` and `plainlist` items are measured automatically. Wrap standalone prose and each `tabularx` X-column description in `\resumeentry{...}` to measure them, using the column's actual available width. Inline formatting, links, manual breaks and multiple paragraphs are supported; nested lists and nested entries are not. Headings, job titles, dates, locations and table labels are not measured as body entries. A configured, enabled section with no measured entries is an input error rather than a silent pass.
 
-**Gate 2 — page count.** The checker reads the page count from the PDF itself and inflates compressed object streams to find the page tree. If that fails, it falls back to the xelatex log.
+**Gate 2 — page count.** The checker reads the page count from the PDF itself and inflates compressed object streams to find the page tree. If that fails, it falls back to the TeX log.
 
 **Gate 3 — copyable text.** The checker parses every ToUnicode CMap in the PDF and fails if any glyph maps to a private-use code point (U+E000–U+F8FF or the supplementary private-use planes). That is how OpenType alternates without a Unicode mapping show up. The report names the code points.
 
 ### Checker options
 
 ```
-resumectl build <resume.tex> [options]   compile with xelatex, then run the gates
+resumectl build <resume.tex> [options]   compile with XeLaTeX or Tectonic, then run the gates
 resumectl check <resume.tex> [options]   run the gates on an existing PDF
 ```
 

@@ -1,5 +1,6 @@
 import { join } from "node:path";
 import { FONT_DIR, TEMPLATE_DIR } from "../rendering/assets.ts";
+import { texEngine } from "../rendering/compile.ts";
 
 export interface Diagnostic {
   name: string;
@@ -23,29 +24,44 @@ export async function doctor(): Promise<DoctorReport> {
     name: "Bun", ok: (major > 1 || (major === 1 && minor >= 3)) && !!Bun.YAML,
     detail: Bun.version, fix: "Install Bun >= 1.3.",
   }];
-  for (const command of ["xelatex", "kpsewhich"]) {
-    const path = Bun.which(command);
-    let ok = false;
-    let detail = "not found in PATH";
-    if (path) {
-      try {
-        const result = Bun.spawnSync([path, "--version"], { stdout: "pipe", stderr: "pipe", timeout: 10_000 });
-        ok = result.exitCode === 0;
-        detail = ok ? `${path}: ${result.stdout.toString().split("\n")[0]}` : `${path}: failed to run`;
-      } catch (error) { detail = `${path}: ${(error as Error).message}`; }
-    }
-    checks.push({ name: command, ok, detail, fix: "Install TinyTeX-1 or TeX Live and add its bin directory to PATH." });
-  }
-  if (checks.find(c => c.name === "kpsewhich")!.ok) {
-    const missing = TEX_FILES.filter(file => {
-      const result = Bun.spawnSync([Bun.which("kpsewhich")!, file], { stdout: "pipe", stderr: "pipe", timeout: 10_000 });
-      return result.exitCode !== 0 || !result.stdout.toString().trim();
-    });
+  const engine = texEngine();
+  if (engine === "tectonic") {
+    const path = Bun.which("tectonic");
+    const ok = !!path && Bun.spawnSync([path, "--help"], { stdout: "pipe", stderr: "pipe", timeout: 10_000 }).exitCode === 0;
     checks.push({
-      name: "TeX dependencies", ok: missing.length === 0,
-      detail: missing.length ? `missing: ${missing.join(", ")}` : `${TEX_FILES.length} required files found`,
-      fix: "Install the README's TeX packages; with TinyTeX-1: tlmgr install titlesec enumitem pgf tex-gyre.",
+      name: "tectonic", ok, detail: ok ? `${path} (downloads TeX packages on first build)` : `${path ?? "not found in PATH"}: failed to run`,
+      fix: "Reinstall Tectonic: brew install tectonic.",
     });
+  } else if (!engine) {
+    checks.push({
+      name: "TeX engine", ok: false, detail: "neither tectonic nor xelatex found in PATH",
+      fix: "Install Tectonic (brew install tectonic; TeX packages download on first build) or TinyTeX-1 (see docs/setup.md).",
+    });
+  } else {
+    for (const command of ["xelatex", "kpsewhich"]) {
+      const path = Bun.which(command);
+      let ok = false;
+      let detail = "not found in PATH";
+      if (path) {
+        try {
+          const result = Bun.spawnSync([path, "--version"], { stdout: "pipe", stderr: "pipe", timeout: 10_000 });
+          ok = result.exitCode === 0;
+          detail = ok ? `${path}: ${result.stdout.toString().split("\n")[0]}` : `${path}: failed to run`;
+        } catch (error) { detail = `${path}: ${(error as Error).message}`; }
+      }
+      checks.push({ name: command, ok, detail, fix: "Install TinyTeX-1 or TeX Live and add its bin directory to PATH." });
+    }
+    if (checks.find(c => c.name === "kpsewhich")!.ok) {
+      const missing = TEX_FILES.filter(file => {
+        const result = Bun.spawnSync([Bun.which("kpsewhich")!, file], { stdout: "pipe", stderr: "pipe", timeout: 10_000 });
+        return result.exitCode !== 0 || !result.stdout.toString().trim();
+      });
+      checks.push({
+        name: "TeX dependencies", ok: missing.length === 0,
+        detail: missing.length ? `missing: ${missing.join(", ")}` : `${TEX_FILES.length} required files found`,
+        fix: "Install the README's TeX packages; with TinyTeX-1: tlmgr install titlesec enumitem pgf tex-gyre.",
+      });
+    }
   }
   for (const path of [join(TEMPLATE_DIR, "resume.cls"), join(TEMPLATE_DIR, "resume-measure.tex"),
     ...[430, 500, 600].map(weight => join(FONT_DIR, `Inter-${weight}.ttf`))]) {

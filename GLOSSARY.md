@@ -14,6 +14,6 @@ resumectl has one domain context: authoring, rendering and checking a résumé f
 | Render manifest | `<name>.resumectl.json`: actual geometry, layout, source/PDF hashes and overflow findings | `src/rendering/measurements.ts` |
 | Last-line fill | Final paragraph's rendered text width divided by its available line width | `src/rendering/measurements.ts` |
 | Quality gate | A pass/fail rule for content length/overflow, page budget or PDF private-use mappings | `src/quality/gates.ts` |
-| Writing evidence | User-supplied facts supporting ownership, mechanisms and outcomes; not inferred from layout scores | `skills/resume-methodology/SKILL.md` |
+| Writing evidence | User-supplied facts supporting ownership, mechanisms and outcomes; not inferred from layout scores | `skills/resumectl/SKILL.md` |
 
 See [the architecture decision](docs/adr/0001-domain-first-organization.md) for module boundaries.

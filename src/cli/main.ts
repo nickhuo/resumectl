@@ -1,6 +1,6 @@
 import { parseArgs } from "node:util";
 import { basename, join, resolve } from "node:path";
-import { cleanIntermediates, compile } from "../rendering/compile.ts";
+import { cleanIntermediates, compile, tectonicCacheReady, texEngine } from "../rendering/compile.ts";
 import { resolveConfig, type ConfigInput } from "../project/config.ts";
 import { formatReport, runGates } from "../quality/gates.ts";
 import { InputError } from "../errors.ts";
@@ -93,7 +93,10 @@ export async function main(args: string[]): Promise<number> {
   const { config } = resolved;
   let pdfPath = v.pdf ? resolve(v.pdf) : join(config.build.outDir!, basename(texPath!).replace(/\.tex$/i, "") + ".pdf");
   if (command === "build") {
-    if (!v.json) console.log(`[1/2] xelatex ${texPath}`);
+    const engine = texEngine();
+    if (!v.json) console.log(`[1/2] ${engine ?? "compile"} ${texPath}`);
+    // stderr keeps --json output parseable while telling agents not to time out.
+    if (engine === "tectonic" && !tectonicCacheReady()) console.error("First Tectonic build: downloading TeX packages (about 45 MB). This can take a few minutes.");
     pdfPath = (await compile(texPath!, { outDir: config.build.outDir, layout: config.layout })).pdfPath;
     if (!v.json) console.log("[2/2] quality gates\n");
   }

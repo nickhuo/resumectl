@@ -9,4 +9,4 @@ This is a single-context project. Maintain vocabulary in [`GLOSSARY.md`](../../G
 - Keep root package exports stable when moving internal files.
 - Run `bun run verify`; rendering tests require the environment described in [`setup.md`](../setup.md).
 
-The [writing skill](../../skills/resume-methodology/SKILL.md) owns résumé-writing guidance, not the TypeScript compiler/checker implementation.
+The [writing skill](../../skills/resumectl/SKILL.md) owns résumé-writing guidance, not the TypeScript compiler/checker implementation.
