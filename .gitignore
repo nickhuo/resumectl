@@ -4,6 +4,6 @@ node_modules/
 *.out
 *.synctex.gz
 *.rmlayout
-*.resume-mode.json
+*.resumectl.json
 output/
 .DS_Store

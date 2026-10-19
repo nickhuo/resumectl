@@ -1,6 +1,6 @@
-# ResumeMode
+# resumectl
 
-**Give your coding agent a resume mode.**
+**A harness for agent-written résumés.**
 
 Paste in a job description and your background. Your coding agent (Claude Code, Codex, Cursor and similar) writes a tailored one-page résumé in LaTeX, renders it, and keeps revising until the PDF passes every check: it fits the page, has no ragged last lines, and parses cleanly in an ATS. Every claim comes from facts you gave it, so it can't invent metrics.
 
@@ -13,7 +13,7 @@ Paste in a job description and your background. Your coding agent (Claude Code, 
 ## Why
 
 - **LaTeX, not Word.** Typesetting is far better, and you never fight Word's interface.
-- **LaTeX suits agents, with a harness to keep them in line.** A `.tex` file is plain text, so an agent can edit it precisely. Left alone, though, it overflows the page and pads bullets. ResumeMode measures the rendered PDF and makes the build fail until the content fits.
+- **LaTeX suits agents, with a harness to keep them in line.** A `.tex` file is plain text, so an agent can edit it precisely. Left alone, though, it overflows the page and pads bullets. resumectl measures the rendered PDF and makes the build fail until the content fits.
 - **Plain by design.** No icons, colour bars or two-column gimmicks. There are two typefaces with carefully tuned sizes and weights. I prefer the sans because it's easier to read on screen, where résumés are actually read. Both styles are single-column, real text and ATS-friendly.
 
 ## Get started
@@ -23,8 +23,8 @@ Paste in a job description and your background. Your coding agent (Claude Code, 
 **2. Clone this repository and check the toolchain:**
 
 ```bash
-git clone https://github.com/nickhuo/resume-mode.git
-cd resume-mode
+git clone https://github.com/nickhuo/resumectl.git
+cd resumectl
 bun install
 bun run resume doctor
 ```

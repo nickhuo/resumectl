@@ -7,15 +7,15 @@ import { InputError } from "../errors.ts";
 import { initConfig, initProject } from "../project/init.ts";
 import { doctor, formatDoctor } from "../project/doctor.ts";
 
-const USAGE = `ResumeMode — configure, render and check a résumé
+const USAGE = `resumectl — configure, render and check a résumé
 
 Usage
-  resume-mode init [directory] [--style <serif|sans>] [--paper <a4|letter>] [--json]
-  resume-mode doctor [--json]
-  resume-mode config init [--config <path>]
-  resume-mode config show [resume.tex] [--config <path>] [--json]
-  resume-mode build <resume.tex> [options]
-  resume-mode check <resume.tex> [options]
+  resumectl init [directory] [--style <serif|sans>] [--paper <a4|letter>] [--json]
+  resumectl doctor [--json]
+  resumectl config init [--config <path>]
+  resumectl config show [resume.tex] [--config <path>] [--json]
+  resumectl build <resume.tex> [options]
+  resumectl check <resume.tex> [options]
 
 Options
   --config <path>             use this YAML config; otherwise discover resume.config.yaml
@@ -57,7 +57,7 @@ export async function main(args: string[]): Promise<number> {
       ...(v.paper !== undefined ? { paper: v.paper as "a4" | "letter" } : {}),
     });
     console.log(v.json ? JSON.stringify(result, null, 2)
-      : `Created ${result.texPath} and ${result.configPath}\nReplace the placeholders, then run resume-mode build "${result.texPath}".`);
+      : `Created ${result.texPath} and ${result.configPath}\nReplace the placeholders, then run resumectl build "${result.texPath}".`);
     return 0;
   }
   if (command === "doctor") {
@@ -100,6 +100,6 @@ export async function main(args: string[]): Promise<number> {
   const report = await runGates(texPath!, pdfPath, { ...config.checks, sections: config.sections }, config.layout);
   console.log(v.json ? JSON.stringify({ pdf: pdfPath, ...resolved, ...report }, null, 2) : formatReport(report));
   if (command === "build" && report.pass && !config.build.keepLogs) await cleanIntermediates(pdfPath);
-  if (command === "build" && report.pass && !v.json) console.log(`\nresume-mode: built ${pdfPath}`);
+  if (command === "build" && report.pass && !v.json) console.log(`\nresumectl: built ${pdfPath}`);
   return report.pass ? 0 : 1;
 }

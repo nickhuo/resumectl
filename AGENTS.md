@@ -4,11 +4,11 @@
 
 ### Resume writing
 
-Use `skills/resume-methodology/SKILL.md` for résumé writing, tailoring and content review. Its workflow uses the current `resume-mode` CLI and rendered quality gates.
+Use `skills/resume-methodology/SKILL.md` for résumé writing, tailoring and content review. Its workflow uses the current `resumectl` CLI and rendered quality gates.
 
 ### Issue tracker
 
-Issues live in GitHub Issues for `nickhuo/resume-mode` (via the `gh` CLI). See `docs/agents/issue-tracker.md`.
+Issues live in GitHub Issues for `nickhuo/resumectl` (via the `gh` CLI). See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

@@ -167,7 +167,7 @@ test("stale source, missing metadata and changed PDF cannot pass checks", async 
   await expect(runGates(tex, pdfPath)).rejects.toThrow("no longer match");
   await Bun.write(pdfPath, originalPdf);
   await rm(manifestPath(pdfPath));
-  await expect(runGates(tex, pdfPath)).rejects.toThrow("run resume-mode build first");
+  await expect(runGates(tex, pdfPath)).rejects.toThrow("run resumectl build first");
 });
 
 test("overflow is rejected even when it is on an earlier line", async () => {

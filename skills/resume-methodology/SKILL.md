@@ -1,6 +1,6 @@
 ---
 name: resume-methodology
-description: Write, rewrite, tailor, score, or review résumé/CV bullets, summaries, sections, or a complete résumé against a target role or job description. Use with ResumeMode to turn verified career evidence into concise LaTeX content and validate the rendered PDF.
+description: Write, rewrite, tailor, score, or review résumé/CV bullets, summaries, sections, or a complete résumé against a target role or job description. Use with resumectl to turn verified career evidence into concise LaTeX content and validate the rendered PDF.
 ---
 
 # Resume Methodology
@@ -87,9 +87,9 @@ Score each bullet from 0 to 2 on each dimension:
 
 Prioritize bullets scoring 8–10. For a score of 7, address the weakest dimension. Rewrite or remove bullets below 7. Scores help select content; they do not replace fact checking or rendered validation.
 
-## ResumeMode workflow
+## resumectl workflow
 
-Use `bun run resume` in this repository or `bunx resume-mode` after installing the package. Run the following commands from the repository root, replacing the source path with the actual file:
+Use `bun run resume` in this repository or `bunx resumectl` after installing the package. Run the following commands from the repository root, replacing the source path with the actual file:
 
 ```bash
 bun run resume doctor
@@ -115,9 +115,9 @@ Rebuild after every content or layout change. Use each failing entry's `section`
 2. Sparse final line: first try compressing to one line. Alternatively, add a mechanism or result already supported by the user's materials; never invent content.
 3. Overflow or excess pages: remove weaker content and inspect long links, unbreakable text and tables. Do not make the résumé difficult to read just to pass.
 4. Private-use character mappings: inspect the font or template; do not ignore broken text copying.
-5. Missing measurements or mismatched hashes: rebuild rather than editing `.resume-mode.json` by hand.
+5. Missing measurements or mismatched hashes: rebuild rather than editing `.resumectl.json` by hand.
 
-All three quality gates must pass: actual rendered content length and overflow, page count, and PDF private-use character mappings. `check` uses the existing PDF and its matching `.resume-mode.json` manifest. Content or layout changes require a rebuild; changes only to checking thresholds can be rechecked directly.
+All three quality gates must pass: actual rendered content length and overflow, page count, and PDF private-use character mappings. `check` uses the existing PDF and its matching `.resumectl.json` manifest. Content or layout changes require a rebuild; changes only to checking thresholds can be rechecked directly.
 
 ## Delivery checks
 

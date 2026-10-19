@@ -19,7 +19,7 @@ export interface BuildManifest {
   overflows: string[];
 }
 export const hash = (data: string | Uint8Array) => new Bun.CryptoHasher("sha256").update(data).digest("hex");
-export const manifestPath = (pdf: string) => pdf.replace(/\.pdf$/i, "") + ".resume-mode.json";
+export const manifestPath = (pdf: string) => pdf.replace(/\.pdf$/i, "") + ".resumectl.json";
 
 /** Read positions in scaled TeX points. No font-width approximation is involved. */
 export function parseMeasurements(raw: string): RenderedBullet[] {
@@ -66,7 +66,7 @@ export function parseMeasurements(raw: string): RenderedBullet[] {
 
 export async function readManifest(pdfPath: string): Promise<BuildManifest> {
   const path = manifestPath(pdfPath);
-  if (!await Bun.file(path).exists()) throw new InputError(`render measurements not found: ${path}; run resume-mode build first`);
+  if (!await Bun.file(path).exists()) throw new InputError(`render measurements not found: ${path}; run resumectl build first`);
   let value: BuildManifest;
   try { value = await Bun.file(path).json(); }
   catch { throw new InputError(`invalid build metadata: ${path}; rebuild the PDF`); }

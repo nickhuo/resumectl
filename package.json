@@ -1,5 +1,5 @@
 {
-  "name": "resume-mode",
+  "name": "resumectl",
   "version": "0.1.0",
   "description": "Clean LaTeX résumé templates and PDF quality checks for coding-agent workflows.",
   "license": "MIT",
@@ -11,7 +11,7 @@
     "./config-schema": "./resume.config.schema.json"
   },
   "bin": {
-    "resume-mode": "./src/cli.ts"
+    "resumectl": "./src/cli.ts"
   },
   "files": [
     "src",

@@ -49,7 +49,7 @@ export async function doctor(): Promise<DoctorReport> {
   }
   for (const path of [join(TEMPLATE_DIR, "resume.cls"), join(TEMPLATE_DIR, "resume-measure.tex"),
     ...[430, 500, 600].map(weight => join(FONT_DIR, `Inter-${weight}.ttf`))]) {
-    checks.push({ name: "Bundled asset", ok: await Bun.file(path).exists(), detail: path, fix: "Restore the template directory or reinstall ResumeMode." });
+    checks.push({ name: "Bundled asset", ok: await Bun.file(path).exists(), detail: path, fix: "Restore the template directory or reinstall resumectl." });
   }
   return { pass: checks.every(c => c.ok), checks };
 }

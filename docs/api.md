@@ -1,7 +1,7 @@
 # Library API
 
 ```ts
-import { compile, runGates, formatReport, resolveConfig } from "resume-mode";
+import { compile, runGates, formatReport, resolveConfig } from "resumectl";
 
 const { config } = await resolveConfig({ texPath: "resume.tex" });
 const { pdfPath } = await compile("resume.tex", {

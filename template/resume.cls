@@ -64,7 +64,7 @@
   % ignores variable-font axes. Sans style is upright only: \textit and
   % \emph render in the body face. Weights: body 430 (offsets the thinner
   % strokes from Scale=0.86), bold 600, name 500.
-  % Font directory: \ResumeFontDir if defined (`resume-mode build` passes an
+  % Font directory: \ResumeFontDir if defined (`resumectl build` passes an
   % absolute path), else ./fonts/ when compiling next to the class.
   \ifdefined\ResumeFontDir
     \defaultfontfeatures[Inter]{Path=\ResumeFontDir}

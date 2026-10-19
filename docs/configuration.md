@@ -5,9 +5,9 @@ This repository includes [resume.config.yaml](../resume.config.yaml); edit it to
 Create a YAML configuration and inspect the effective values:
 
 ```bash
-bunx resume-mode config init
-bunx resume-mode config show resume.tex --json
-bunx resume-mode build resume.tex
+bunx resumectl config init
+bunx resumectl config show resume.tex --json
+bunx resumectl build resume.tex
 ```
 
 A complete example of `resume.config.yaml`:
