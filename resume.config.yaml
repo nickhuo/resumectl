@@ -42,6 +42,7 @@ sections:
     checks:
       maxLines: 2
       minLastLineFill: 0.8
+      minBullets: 2 # Each role must have at least two bullet points.
   PROJECTS:
     editable: true
     checks:

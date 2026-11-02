@@ -33,7 +33,7 @@ build:
     await Bun.write(texPath, String.raw`\documentclass[style=sans,scale=0.8]{resume}`);
     const r = await resolveConfig({ texPath, cwd: root, overrides: { layout: { scale: 0.95 }, build: { keepLogs: false } } });
     expect(r.config.layout).toMatchObject({ style: "sans", paper: "letter", scale: 0.95, margins: { left: "0.5in", right: "0.35in" }, sectionSpacing: { before: "*2", after: "*0.8" } });
-    expect(r.config.checks.bullets).toEqual({ maxLines: 2, minLastLineFill: 0.85 });
+    expect(r.config.checks.bullets).toEqual({ maxLines: 2, minLastLineFill: 0.85, minBullets: 1 });
     expect(r.config.build).toEqual({ outDir: join(dir, "output"), keepLogs: false });
     expect(r.sources["layout.style"]).toBe("documentclass");
     expect(r.sources["layout.scale"]).toBe("override");
@@ -83,15 +83,15 @@ sections:
     checks: false
 `);
     const r = await resolveConfig({ configPath: path });
-    expect(r.config.sections["WORK EXPERIENCE"]).toEqual({ editable: true, checks: { maxLines: 1, minLastLineFill: 0.8 } });
-    expect(r.config.sections["R&D. PROJECTS"]).toEqual({ editable: false, checks: { maxLines: 2, minLastLineFill: 0.5 } });
+    expect(r.config.sections["WORK EXPERIENCE"]).toEqual({ editable: true, checks: { maxLines: 1, minLastLineFill: 0.8, minBullets: 1 } });
+    expect(r.config.sections["R&D. PROJECTS"]).toEqual({ editable: false, checks: { maxLines: 2, minLastLineFill: 0.5, minBullets: 1 } });
     expect(r.config.sections.EDUCATION.checks).toBe(false);
     expect(r.sources["sections.WORK EXPERIENCE.checks.minLastLineFill"]).toBe(path);
     const overridden = await resolveConfig({ configPath: path, overrides: {
       checks: { bullets: { maxLines: 3 } },
       sections: { " Work   Experience ": { checks: { minLastLineFill: 0.7 } } },
     } });
-    expect(overridden.config.sections["WORK EXPERIENCE"].checks).toEqual({ maxLines: 3, minLastLineFill: 0.7 });
+    expect(overridden.config.sections["WORK EXPERIENCE"].checks).toEqual({ maxLines: 3, minLastLineFill: 0.7, minBullets: 1 });
     expect(overridden.config.sections.EDUCATION.checks).toBe(false);
     expect(overridden.sources["sections.WORK EXPERIENCE.checks.maxLines"]).toBe("override");
     for (const sections of [

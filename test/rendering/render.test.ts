@@ -206,7 +206,7 @@ test("failed compilation removes an old PDF and manifest, even if TeX emitted a 
 
 test("page limits and section selection use compiled output", async () => {
   const tex = join(root, "pages.tex");
-  await Bun.write(tex, document([sentence], String.raw`\newpage\section{PROJECTS}\begin{itemize}\item ` + sentence + String.raw`\end{itemize}`));
+  await Bun.write(tex, document([sentence], String.raw`\newpage\section{PROJECTS}\begin{itemize}\item ` + sentence + String.raw`\item ` + sentence + String.raw`\end{itemize}`));
   const { pdfPath } = await compile(tex);
   expect((await runGates(tex, pdfPath)).pagesPass).toBe(false);
   expect((await runGates(tex, pdfPath, { section: "projects", maxPages: 2 })).pass).toBe(true);

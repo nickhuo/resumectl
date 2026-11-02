@@ -14,7 +14,7 @@ export interface LayoutOptions {
   bulletIndent: string;
   sectionSpacing: { before: string; after: string };
 }
-export interface BulletOptions { maxLines: number; minLastLineFill: number }
+export interface BulletOptions { maxLines: number; minLastLineFill: number; minBullets: number }
 export interface SectionOptions {
   editable: boolean;
   checks: BulletOptions | false;
@@ -49,7 +49,7 @@ export interface ConfigInput {
 export const CONFIG_NAME = "resume.config.yaml";
 export const SCHEMA_PATH = resolve(import.meta.dir, "../../resume.config.schema.json");
 export const DEFAULT_CHECKS: CheckOptions = {
-  bullets: { maxLines: 2, minLastLineFill: 0.8 }, maxPages: 1,
+  bullets: { maxLines: 2, minLastLineFill: 0.8, minBullets: 1 }, maxPages: 1,
 };
 export const DEFAULT_LAYOUT: LayoutOptions = {
   style: "serif", paper: "a4", scale: 0.86, tracking: -1.5, ratio: 1.125,
@@ -80,9 +80,10 @@ function dimension(value: unknown, path: string, absolute = false, multiplier = 
   }
 }
 function bulletOptions(value: unknown, path: string) {
-  const b = object(value, path, ["maxLines", "minLastLineFill"]);
+  const b = object(value, path, ["maxLines", "minLastLineFill", "minBullets"]);
   if (b.maxLines !== undefined) number(b.maxLines, `${path}.maxLines`, 1, 100, true);
   if (b.minLastLineFill !== undefined) number(b.minLastLineFill, `${path}.minLastLineFill`, 0, 1);
+  if (b.minBullets !== undefined) number(b.minBullets, `${path}.minBullets`, 1, 1000, true);
 }
 /** Validate both files and CLI/API overrides before any value reaches TeX. */
 export function validateConfig(value: unknown): ConfigInput {
@@ -239,7 +240,7 @@ export async function resolveConfig(options: { texPath?: string; configPath?: st
     sources[`sections.${name}.editable`] ??= "default";
     if (policy.checks === false) continue;
     policy.checks = { ...config.checks.bullets, ...policy.checks };
-    for (const field of ["maxLines", "minLastLineFill"] as const) {
+    for (const field of ["maxLines", "minLastLineFill", "minBullets"] as const) {
       const path = `sections.${name}.checks.${field}`;
       sources[path] ??= sources[`checks.bullets.${field}`];
       // CLI/global API overrides apply to selected sections, above file-specific rules.

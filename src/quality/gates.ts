@@ -14,6 +14,12 @@ export interface BulletResult extends RenderedBullet {
   text: string;
   status: "ok" | "too-many-lines" | "sparse-last-line" | "overflow";
 }
+export interface SingleBulletViolation {
+  key: "section_min_bullets";
+  section: string;
+  count: number;
+  bullet: string;
+}
 export interface GateReport {
   classOptions: ClassOptions;
   layout: LayoutOptions;
@@ -24,15 +30,18 @@ export interface GateReport {
   privateUse: number[];
   overflows: string[];
   bulletsPass: boolean;
+  minBulletsPass: boolean;
   pagesPass: boolean;
   textPass: boolean;
   pass: boolean;
+  singleBulletViolations: SingleBulletViolation[];
 }
 export interface SectionResult {
   section: string;
   editable: boolean;
   checks: BulletOptions | false;
   bullets: BulletResult[];
+  minBulletsMet: boolean;
   pass: boolean;
 }
 export function checkBullets(rendered: RenderedBullet[], options: GateOptions, texts: string[] = []): BulletResult[] {
@@ -72,11 +81,12 @@ export async function runGates(texPath: string, pdfPath: string, overrides: Gate
   const sections: SectionResult[] = selected.map(section => {
     const policy = policies.get(section);
     const editable = policy?.editable ?? false;
-    if (policy?.checks === false) return { section, editable, checks: false, bullets: [], pass: true };
+    if (policy?.checks === false) return { section, editable, checks: false, bullets: [], minBulletsMet: true, pass: true };
     const checks = { ...options.bullets, ...policy?.checks };
     const bullets = checkBullets(manifest.bullets, { ...options, section, bullets: checks }, extractSectionEntries(tex, section));
     if (!bullets.length) throw new InputError(`found no rendered bullets or entries in section "${section}"; check the section name or wrap prose/table descriptions in \\resumeentry{...}`);
-    return { section, editable, checks, bullets, pass: bullets.every(b => b.status === "ok") };
+    const minBulletsMet = bullets.length >= checks.minBullets;
+    return { section, editable, checks, bullets, minBulletsMet, pass: bullets.every(b => b.status === "ok") && minBulletsMet };
   });
   const bullets = sections.flatMap(s => s.bullets);
   let pages = countPdfPages(bytes);
@@ -87,22 +97,32 @@ export async function runGates(texPath: string, pdfPath: string, overrides: Gate
   if (pages === null) throw new InputError(`could not read the page count of ${pdfPath}`);
   const privateUse = findPrivateUseMappings(bytes);
   const bulletsPass = bullets.every(b => b.status === "ok") && manifest.overflows.length === 0;
+  const singleBulletViolations: SingleBulletViolation[] = sections
+    .filter(s => s.checks !== false && !s.minBulletsMet)
+    .map(s => ({
+      key: "section_min_bullets" as const,
+      section: s.section,
+      count: s.bullets.length,
+      bullet: s.bullets[0]?.text.slice(0, 90) ?? "",
+    }));
+  const minBulletsPass = singleBulletViolations.length === 0;
   const pagesPass = pages <= options.maxPages;
   const textPass = privateUse.length === 0;
   const layout = manifest.layout;
   const classOptions: ClassOptions = { style: layout.style, scale: layout.style === "sans" ? layout.scale : 1, tracking: layout.style === "sans" ? layout.tracking : 0 };
-  return { classOptions, layout, options, sections, bullets, pages, privateUse, overflows: manifest.overflows, bulletsPass, pagesPass, textPass, pass: bulletsPass && pagesPass && textPass };
+  return { classOptions, layout, options, sections, bullets, pages, privateUse, overflows: manifest.overflows, bulletsPass, minBulletsPass, pagesPass, textPass, pass: bulletsPass && minBulletsPass && pagesPass && textPass, singleBulletViolations };
 }
 export function formatReport(r: GateReport): string {
   return [
     `Gate 1 — rendered content length (${r.layout.style}, ${r.layout.paper})`,
     ...r.sections.flatMap(s => s.checks === false ? [`  ${s.section}: SKIP (checks disabled; AI editable: ${s.editable})`] : [
-      `  ${s.section}: ≤ ${s.checks.maxLines} line${s.checks.maxLines === 1 ? "" : "s"}, last line ≥ ${Math.round(s.checks.minLastLineFill * 100)}% full; AI editable: ${s.editable}`,
+      `  ${s.section}: ≤ ${s.checks.maxLines} line${s.checks.maxLines === 1 ? "" : "s"}, last line ≥ ${Math.round(s.checks.minLastLineFill * 100)}% full, ≥ ${s.checks.minBullets} bullet${s.checks.minBullets === 1 ? "" : "s"}; AI editable: ${s.editable}`,
       `    ${s.bullets.length} ${s.bullets.length === 1 ? "entry" : "entries"} — ${s.pass ? "PASS" : "FAIL"}`,
       ...s.bullets.filter(b => b.status !== "ok").map(b => `    ${b.status.toUpperCase()} ${s.section} #${b.index}: ${b.lines} lines, last line ${(b.lastLineFill * 100).toFixed(1)}% full${b.text ? ` — ${b.text.slice(0, 80)}${b.text.length > 80 ? "…" : ""}` : ""}`),
+      ...(s.minBulletsMet ? [] : [`    SECTION-MIN-BULLETS ${s.section}: only ${s.bullets.length} bullet — ${s.bullets[0]?.text.slice(0, 80) ?? ""}${(s.bullets[0]?.text.length ?? 0) > 80 ? "…" : ""}`]),
     ]),
     ...r.overflows.map(s => `  OVERFLOW: ${s}`),
-    `  ${r.bulletsPass ? "PASS" : "FAIL"}`, "",
+    `  ${r.bulletsPass && r.minBulletsPass ? "PASS" : "FAIL"}`, "",
     `Gate 2 — at most ${r.options.maxPages} page${r.options.maxPages === 1 ? "" : "s"}`,
     `  pages    ${r.pages}`, `  ${r.pagesPass ? "PASS" : "FAIL"}`, "",
     "Gate 3 — text copies cleanly (no private-use characters)",
