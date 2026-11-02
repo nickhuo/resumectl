@@ -240,7 +240,7 @@ export async function resolveConfig(options: { texPath?: string; configPath?: st
     sources[`sections.${name}.editable`] ??= "default";
     if (policy.checks === false) continue;
     policy.checks = { ...config.checks.bullets, ...policy.checks };
-    for (const field of ["maxLines", "minLastLineFill"] as const) {
+    for (const field of ["maxLines", "minLastLineFill", "minBullets"] as const) {
       const path = `sections.${name}.checks.${field}`;
       sources[path] ??= sources[`checks.bullets.${field}`];
       // CLI/global API overrides apply to selected sections, above file-specific rules.
