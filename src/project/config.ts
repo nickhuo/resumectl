@@ -49,7 +49,7 @@ export interface ConfigInput {
 export const CONFIG_NAME = "resume.config.yaml";
 export const SCHEMA_PATH = resolve(import.meta.dir, "../../resume.config.schema.json");
 export const DEFAULT_CHECKS: CheckOptions = {
-  bullets: { maxLines: 2, minLastLineFill: 0.8, minBullets: 2 }, maxPages: 1,
+  bullets: { maxLines: 2, minLastLineFill: 0.8, minBullets: 1 }, maxPages: 1,
 };
 export const DEFAULT_LAYOUT: LayoutOptions = {
   style: "serif", paper: "a4", scale: 0.86, tracking: -1.5, ratio: 1.125,

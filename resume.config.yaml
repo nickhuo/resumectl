@@ -32,7 +32,6 @@ sections:
     checks:
       maxLines: 3
       minLastLineFill: 0.5
-      minBullets: 1 # Summary is a single prose entry by design.
   EDUCATION:
     editable: false
     checks:
@@ -43,6 +42,7 @@ sections:
     checks:
       maxLines: 2
       minLastLineFill: 0.8
+      minBullets: 2 # Each role must have at least two bullet points.
   PROJECTS:
     editable: true
     checks:
