@@ -53,6 +53,24 @@ Default structure: **Action + technical mechanism + result + business or user im
 - Explain the technical choice or mechanism instead of merely listing tools.
 - Support impact with verified metrics, scope or observable results. A missing number is not a reason to invent one.
 
+#### Find what to quantify
+
+Most candidates think only of revenue or latency and conclude their work has no numbers. When a bullet scores below 2 on result evidence, go through the outcomes below, pick the ones the work plausibly changed, and ask the user for the verified figure. Ask specific questions ("How many hours a week did the old process take?") rather than "Do you have any metrics?", because people recall numbers when given a concrete prompt.
+
+| Outcome | Measures to ask about |
+|---|---|
+| Cost and time | Dollars saved; hours reduced; workflow tasks reduced |
+| Process | Processes or controls improved; productivity increased |
+| Quality | Quality increased (fewer errors) |
+| Delivery | Schedule progress made; tasks done on or ahead of schedule; milestones delivered early; on-time delivery percentage |
+| People | People hired; people promoted; employee satisfaction ratings |
+| Customers and public | Customer feedback ratings; positive press or social posts; social media followers gained; social media engagement improved |
+| Innovation | Patents generated |
+
+- Prefer the measure the target role cares about. A hiring manager for an engineering lead weighs people hired and delivery dates; a growth role weighs engagement and followers.
+- State a change with its baseline when the user has one ("from 6 hours to 40 minutes"), since a bare percentage hides the scale.
+- Every number still needs a source in the user's materials or answers. The table is a list of questions, not a list of claims.
+
 Example structure, with illustrative numbers:
 
 > Built REST API caching across 12 endpoints, reducing p95 latency 38% and improving checkout reliability.
