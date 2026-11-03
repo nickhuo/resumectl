@@ -148,6 +148,21 @@ Rebuild after every content or layout change. Use each failing entry's `section`
 
 All three quality gates must pass: actual rendered content length and overflow, page count, and PDF private-use character mappings. `check` uses the existing PDF and its matching `.resumectl.json` manifest. Content or layout changes require a rebuild; changes only to checking thresholds can be rechecked directly.
 
+### Match the job description
+
+`match` is a diagnostic. It is not an ATS score and it does not predict whether an employer will pass or reject the résumé. The letter grade is computed in code. Do not ask a model for A–D, and do not describe the grade as an ATS score. Probabilities are uncalibrated until the user has labeled examples.
+
+1. If the posting is a Greenhouse, Lever, Ashby, or ordinary HTML URL, run `resumectl match path/to/resume.tex --jd <url> --decider none` (inside this repository, `bun run resumectl match ...`). The command caches `jd/<slug>/jd.txt` and `source.json`. LinkedIn, Workday, and other login walls fail with a message to paste the text. The first URL run exits 2 until `jd/<slug>/jd.requirements.yaml` exists. That is expected: match does not invent requirements.
+2. Write that YAML from the posting, one requirement per row. Use kind `work_authorization`, `location`, `license`, `education`, or `years` for hard gates so they stay out of the letter grade. Put the posting's own terms in `terms`, including aliases the résumé might already use.
+3. Run match again. The default `--decider openai` sends each requirement and its top evidence snippets to the OpenAI Decisions API (`gpt-6-luna`) and needs `OPENAI_API_KEY`. `--decider jev` uses TypeSafe Jev (`jev-1.14.0`, `TYPESAFE_API_KEY`). `--decider none` is offline exact and alias matching. Inside this repository, `bun run resumectl match ...` is equivalent.
+4. Read the gaps, and do not fabricate evidence to raise the grade.
+   - `wording`: evidence exists. Use the posting's term only when it accurately describes the work.
+   - `placement`: the term is only in a skills list. Move it into a bullet that already has a mechanism or result.
+   - `missing evidence`: ask the user. Never invent a bullet, tool, or metric.
+   - `parse`: fix structure or rebuild so the PDF text layer can be checked.
+   - `knockout`: an application-form risk (authorization, location, license, degree, years). Do not edit facts to clear it.
+5. `--fail-under` is optional and off by default. A low grade still exits 0 so the command stays advisory. Passing the quality gates still does not guarantee acceptance or compatibility with every ATS parser.
+
 ## Delivery checks
 
 - Support the role's priorities with real evidence and list any unresolved factual gaps.

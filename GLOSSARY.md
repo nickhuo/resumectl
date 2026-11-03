@@ -15,5 +15,10 @@ resumectl has one domain context: authoring, rendering and checking a résumé f
 | Last-line fill | Final paragraph's rendered text width divided by its available line width | `src/rendering/measurements.ts` |
 | Quality gate | A pass/fail rule for content length/overflow, page budget or PDF private-use mappings | `src/quality/gates.ts` |
 | Writing evidence | User-supplied facts supporting ownership, mechanisms and outcomes; not inferred from layout scores | `skills/resumectl/SKILL.md` |
+| Requirement | One row in `jd.requirements.yaml`: a skill, credential, or constraint taken from a posting | `src/match/requirements.ts` |
+| Hard gate | Work authorization, location, license, minimum degree, or minimum years. Reported beside the grade and never averaged into it | `src/match/hard-gates.ts` |
+| Match grade | Letter A–D computed in code from per-requirement levels. Not an ATS score and not an employer prediction | `src/match/grade.ts` |
+| Gap | A typed fix hint: wording, placement, missing evidence, parse, or knockout | `src/match/gaps.ts` |
+| Decider | Optional per-requirement scorer: OpenAI Decisions (`openai`), TypeSafe Jev (`jev`), or offline exact/alias matching (`none`) | `src/match/deciders/` |
 
 See [the architecture decision](docs/adr/0001-domain-first-organization.md) for module boundaries.

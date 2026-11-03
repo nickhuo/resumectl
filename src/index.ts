@@ -20,3 +20,7 @@ export { readClassOptions, extractSectionItems, extractSectionEntries, stripToVi
 export { typographicWidth } from "./rendering/font-width.ts";
 export { initConfig, initProject } from "./project/init.ts";
 export { doctor, formatDoctor, type DoctorReport, type Diagnostic } from "./project/doctor.ts";
+export { runMatch, type MatchOptions, type MatchReport, type RequirementResult } from "./match/run.ts";
+export { formatMatchReport } from "./match/format.ts";
+export { ExternalServiceError } from "./errors.ts";
+export { MATCH_DISCLAIMER, type Level, type Grade, type DeciderName } from "./match/types.ts";

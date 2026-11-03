@@ -9,4 +9,4 @@ This is a single-context project. Maintain vocabulary in [`GLOSSARY.md`](../../G
 - Keep root package exports stable when moving internal files.
 - Run `bun run verify`; rendering tests require the environment described in [`setup.md`](../setup.md).
 
-The [writing skill](../../skills/resumectl/SKILL.md) owns résumé-writing guidance, not the TypeScript compiler/checker implementation.
+The [writing skill](../../skills/resumectl/SKILL.md) owns résumé-writing guidance, not the TypeScript compiler/checker implementation. `resumectl match` lives in `src/match/` ([ADR 0002](../adr/0002-match-diagnostic.md)). It is a diagnostic, not a fourth quality gate.

@@ -1,0 +1,9 @@
+work_authorization: US citizen
+location: Austin, TX
+open_to_remote: true
+degrees:
+  - level: bachelor
+    field: Computer Science
+facts:
+  - Built a Python service that cut checkout latency
+  - Designed a PostgreSQL schema for orders

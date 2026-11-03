@@ -62,6 +62,16 @@ The agent then maps the job's requirements to your evidence and asks about gaps 
 
 You can change any limit per section in `resume.config.yaml`, and mark sections such as Education as off-limits to the agent. See [configuration](docs/configuration.md).
 
+## Match a job description
+
+`resumectl match` compares the résumé with requirements you write down from a posting. Each requirement is Missing, Mentioned, Partial, or Demonstrated, with a quote. Work authorization, location, license, and minimum degree or years are reported as separate hard gates. A letter grade A–D is computed in code from the other requirements.
+
+This is not an ATS score and it does not predict whether an employer will pass or reject the résumé. Probabilities are uncalibrated until you label your own examples. See [match](docs/match.md).
+
+```bash
+bunx resumectl match ./my-resume/resume.tex --jd jd/acme-role/jd.requirements.yaml --decider none
+```
+
 ## Editing by hand
 
 ```bash

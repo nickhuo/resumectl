@@ -1,0 +1,45 @@
+version: 1
+title: Backend Engineer
+company: Northstar
+requirements:
+  - id: python
+    text: Production Python services
+    kind: skill
+    priority: required
+    terms: [Python]
+  - id: postgresql
+    text: PostgreSQL in production
+    kind: skill
+    priority: required
+    terms: [PostgreSQL, Postgres]
+  - id: go
+    text: Go services
+    kind: skill
+    priority: required
+    terms: [Go]
+  - id: graphql
+    text: GraphQL APIs
+    kind: skill
+    priority: preferred
+    terms: [GraphQL]
+  - id: work-auth
+    text: Authorized to work in the United States
+    kind: work_authorization
+    priority: required
+    terms: ["United States", "US citizen"]
+  - id: years
+    text: At least 3 years of software engineering experience
+    kind: years
+    priority: required
+    min_years: 3
+  - id: degree
+    text: Bachelor's degree in computer science or equivalent experience
+    kind: education
+    priority: required
+    level: bachelor
+    terms: ["Bachelor", "B.S."]
+  - id: onsite-nyc
+    text: Onsite in New York City
+    kind: location
+    priority: required
+    terms: ["New York", "NYC"]

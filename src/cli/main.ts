@@ -6,6 +6,10 @@ import { formatReport, runGates } from "../quality/gates.ts";
 import { InputError } from "../errors.ts";
 import { initConfig, initProject } from "../project/init.ts";
 import { doctor, formatDoctor } from "../project/doctor.ts";
+import { formatMatchReport } from "../match/format.ts";
+import { gradeMeets } from "../match/grade.ts";
+import { runMatch } from "../match/run.ts";
+import type { DeciderName, Grade } from "../match/types.ts";
 
 const USAGE = `resumectl — configure, render and check a résumé
 
@@ -16,6 +20,7 @@ Usage
   resumectl config show [resume.tex] [--config <path>] [--json]
   resumectl build <resume.tex> [options]
   resumectl check <resume.tex> [options]
+  resumectl match <resume.tex> --jd <url|txt|yaml> [options]
 
 Options
   --config <path>             use this YAML config; otherwise discover resume.config.yaml
@@ -29,8 +34,22 @@ Options
   --pdf <path>                existing PDF to check (check only)
   --keep-logs                 keep compiler intermediates after a passing build
   --no-keep-logs              override keepLogs: true from config
+  --jd <url|txt|yaml>         job URL, pasted jd.txt, requirements YAML, or a jd/<slug>/ directory (match)
+  --profile <facts.yaml>      work authorization, location, degrees, licenses, facts (match)
+  --decider <openai|jev|none> per-requirement decider (match, default openai)
+  --model <id>                override gpt-6-luna or jev-1.14.0 (match)
+  --fail-under <A|B|C|D>      exit 1 when the grade is below this letter (match, off by default)
+  --refresh                   refetch a cached job URL (match)
   --json                     machine-readable report, including effective config
   -h, --help
+
+Match is diagnostic coverage, not an ATS score and not a prediction that an employer
+will pass or reject the résumé. The letter grade is computed in code from per-requirement
+levels (Missing / Mentioned / Partial / Demonstrated). Hard gates — work authorization,
+location, license, minimum degree or years — are reported separately and are not averaged
+into the grade. openai uses OPENAI_API_KEY and the Decisions API (gpt-6-luna). jev uses
+TYPESAFE_API_KEY and pinned model jev-1.14.0. none is offline exact/alias matching.
+Probabilities are uncalibrated until you label your own examples. Exit 0 is advisory.
 
 Precedence: CLI > config > documentclass > defaults.
 Exit codes: 0 success · 1 quality/compile/dependency failure · 2 invalid input.`;
@@ -43,10 +62,17 @@ export async function main(args: string[]): Promise<number> {
       style: { type: "string" }, paper: { type: "string" }, section: { type: "string" },
       "max-lines": { type: "string" }, "min-last-line-fill": { type: "string" }, "max-pages": { type: "string" },
       "keep-logs": { type: "boolean" }, "no-keep-logs": { type: "boolean" }, json: { type: "boolean" }, help: { type: "boolean", short: "h" },
+      jd: { type: "string" }, profile: { type: "string" }, decider: { type: "string" }, model: { type: "string" },
+      "fail-under": { type: "string" }, refresh: { type: "boolean" },
     },
   });
   const [command, arg, texArg] = positionals;
   if (v.help || !command) { console.log(USAGE); return v.help ? 0 : 2; }
+  const matchOnly = ["jd", "profile", "decider", "model", "fail-under", "refresh"] as const;
+  if (command !== "match" && matchOnly.some(key => v[key] !== undefined)) {
+    throw new InputError(`--${matchOnly.find(key => v[key] !== undefined)} is only supported by match`);
+  }
+  if (command === "match") return matchCommand(positionals, v);
   if (v["keep-logs"] && v["no-keep-logs"]) throw new InputError("choose either --keep-logs or --no-keep-logs");
   if (command === "init") {
     if (positionals.length > 2 || Object.keys(v).some(k => !["style", "paper", "json"].includes(k))) {
@@ -105,4 +131,35 @@ export async function main(args: string[]): Promise<number> {
   if (command === "build" && report.pass && !config.build.keepLogs) await cleanIntermediates(pdfPath);
   if (command === "build" && report.pass && !v.json) console.log(`\nresumectl: built ${pdfPath}`);
   return report.pass ? 0 : 1;
+}
+
+async function matchCommand(positionals: string[], v: Record<string, string | boolean | undefined>): Promise<number> {
+  const allowed = new Set(["jd", "profile", "decider", "model", "fail-under", "refresh", "json"]);
+  for (const key of Object.keys(v)) {
+    if (v[key] !== undefined && !allowed.has(key)) throw new InputError(`match does not accept --${key}`);
+  }
+  if (positionals.length > 2) throw new InputError("too many positional arguments");
+  const texPath = positionals[1];
+  if (!texPath) throw new InputError("match needs a .tex file");
+  const jd = v.jd;
+  if (typeof jd !== "string" || !jd) throw new InputError("match needs --jd <url|txt|yaml>");
+  const decider = typeof v.decider === "string" ? v.decider : "openai";
+  if (decider !== "openai" && decider !== "jev" && decider !== "none") throw new InputError("--decider must be openai, jev, or none");
+  let failUnder: Grade | undefined;
+  if (typeof v["fail-under"] === "string") {
+    const letter = v["fail-under"].toUpperCase();
+    if (letter !== "A" && letter !== "B" && letter !== "C" && letter !== "D") throw new InputError("--fail-under must be A, B, C, or D");
+    failUnder = letter;
+  }
+  const report = await runMatch({
+    texPath,
+    jd,
+    decider: decider as DeciderName,
+    ...(typeof v.profile === "string" ? { profilePath: v.profile } : {}),
+    ...(typeof v.model === "string" ? { model: v.model } : {}),
+    ...(v.refresh ? { refresh: true } : {}),
+  });
+  console.log(v.json ? JSON.stringify(report, null, 2) : formatMatchReport(report));
+  if (failUnder && !gradeMeets(report.grade, failUnder)) return 1;
+  return 0;
 }

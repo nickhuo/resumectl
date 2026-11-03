@@ -34,3 +34,5 @@ resumectl check <resume.tex> [options]   run the gates on an existing PDF
 The old `--min-chars` and `--max-width` flags are replaced by the line-count and fill controls. `check` requires a PDF built with the current CLI and its matching `.resumectl.json` file. Use the same layout config/overrides as the build; changing layout or source requires rebuilding. Checking thresholds can change without a rebuild.
 
 Exit codes: `0` means every gate passed. `1` means a gate failed, the compile failed, or doctor found a missing dependency. `2` means a usage or input error.
+
+`resumectl match` is a separate diagnostic. It does not add a fourth gate and it does not claim an ATS score. See [match](match.md).
