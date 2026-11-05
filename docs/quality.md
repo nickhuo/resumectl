@@ -26,11 +26,11 @@ resumectl check <resume.tex> [options]   run the gates on an existing PDF
 | `--max-pages <n>` | `1` | Page limit |
 | `--style <serif\|sans>` | from YAML or class | Override the rendered font style |
 | `--paper <a4\|letter>` | from YAML or class | Override paper size |
-| `--pdf <path>` | PDF in the effective output directory | Existing PDF to check |
+| `--pdf <path>` | PDF in the effective output directory | Check only: existing PDF; cannot combine with `--out-dir` |
 | `--out-dir <dir>` | from YAML, otherwise beside source | Output directory |
-| `--keep-logs` / `--no-keep-logs` | from YAML, otherwise off | Keep or remove compiler intermediates after a passing build |
+| `--keep-logs` / `--no-keep-logs` | from YAML, otherwise off | Build only: keep or remove compiler intermediates after a passing build |
 | `--json` | off | Report with effective config, parameter sources and per-bullet measurements |
 
 The old `--min-chars` and `--max-width` flags are replaced by the line-count and fill controls. `check` requires a PDF built with the current CLI and its matching `.resumectl.json` file. Use the same layout config/overrides as the build; changing layout or source requires rebuilding. Checking thresholds can change without a rebuild.
 
-Exit codes: `0` means every gate passed. `1` means a gate failed, the compile failed, or doctor found a missing dependency. `2` means a usage or input error.
+Exit codes: `0` means every gate passed. `1` means a gate, compile, dependency or other operation failed, including an external executable missing from PATH. `2` means a usage or input error, including a missing source/PDF. `130` means Ctrl+C during compilation. A failed gate report stays on stdout in human and JSON modes. Progress, build receipts and human recovery commands go to stderr; other `--json` failures emit one error document on stderr with empty stdout. See the [CLI reference](cli.md).

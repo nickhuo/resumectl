@@ -30,7 +30,7 @@ export async function resolveInputs(tex: string, texPath: string, depth = 0): Pr
     const name = m[1].trim();
     const path = join(dirname(texPath), name.endsWith(".tex") ? name : `${name}.tex`);
     const file = Bun.file(path);
-    if (!await file.exists()) throw new InputError(`\\input target not found: ${path}`);
+    if (!await file.exists()) throw new InputError(`\\input target not found: ${path}`, "missing_input");
     out += src.slice(last, m.index) + await resolveInputs(await file.text(), path, depth + 1);
     last = m.index! + m[0].length;
   }

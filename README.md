@@ -71,6 +71,10 @@ bunx resumectl build ./my-resume/resume.tex   # PDF in my-resume/output/, all ch
 
 Fonts, sizes, margins and LaTeX commands are documented in [rendering](docs/rendering.md).
 
+Use `bunx resumectl help build` or `bunx resumectl config --help` for command-specific help, and `bunx resumectl --version` for the version. Bare `resumectl` and `resumectl config` show help and exit 0. Help needs no project or TeX installation.
+
+Human results go to stdout; progress and recovery commands go to stderr. Add `--json` for machine results. Errors then produce a single JSON document on stderr and empty stdout; completed quality or doctor reports stay on stdout even when checks fail. Exit codes are 0 for success, 1 for failed checks or operational failures, 2 for invalid/missing input, and 130 for Ctrl+C during compilation. See the [CLI reference](docs/cli.md) for options, error fields and deliberate exceptions to Vercel's guidelines.
+
 ## License
 
 [MIT](LICENSE). Inter is bundled under the [SIL Open Font License](template/fonts/OFL-Inter.txt). TeX Gyre Termes comes from your TeX distribution.
