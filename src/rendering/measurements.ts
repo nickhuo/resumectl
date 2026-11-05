@@ -66,7 +66,7 @@ export function parseMeasurements(raw: string): RenderedBullet[] {
 
 export async function readManifest(pdfPath: string): Promise<BuildManifest> {
   const path = manifestPath(pdfPath);
-  if (!await Bun.file(path).exists()) throw new InputError(`render measurements not found: ${path}; run resumectl build first`);
+  if (!await Bun.file(path).exists()) throw new InputError(`render measurements not found: ${path}; run resumectl build first`, "missing_input");
   let value: BuildManifest;
   try { value = await Bun.file(path).json(); }
   catch { throw new InputError(`invalid build metadata: ${path}; rebuild the PDF`); }

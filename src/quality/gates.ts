@@ -63,8 +63,8 @@ export async function runGates(texPath: string, pdfPath: string, overrides: Gate
   const { sections: sectionPolicies, ...checkOverrides } = overrides;
   validateConfig({ checks: checkOverrides, ...(sectionPolicies !== undefined ? { sections: sectionPolicies } : {}) });
   const options = { ...DEFAULT_CHECKS, ...overrides, bullets: { ...DEFAULT_CHECKS.bullets, ...overrides.bullets } };
-  if (!await Bun.file(texPath).exists()) throw new InputError(`TeX source not found: ${texPath}`);
-  if (!await Bun.file(pdfPath).exists()) throw new InputError(`PDF not found: ${pdfPath}`);
+  if (!await Bun.file(texPath).exists()) throw new InputError(`TeX source not found: ${texPath}`, "missing_input");
+  if (!await Bun.file(pdfPath).exists()) throw new InputError(`PDF not found: ${pdfPath}`, "missing_input");
   const tex = await resolveInputs(await Bun.file(texPath).text(), texPath);
   const bytes = await Bun.file(pdfPath).bytes();
   const manifest = await readManifest(pdfPath);
@@ -112,7 +112,7 @@ export async function runGates(texPath: string, pdfPath: string, overrides: Gate
   const classOptions: ClassOptions = { style: layout.style, scale: layout.style === "sans" ? layout.scale : 1, tracking: layout.style === "sans" ? layout.tracking : 0 };
   return { classOptions, layout, options, sections, bullets, pages, privateUse, overflows: manifest.overflows, bulletsPass, minBulletsPass, pagesPass, textPass, pass: bulletsPass && minBulletsPass && pagesPass && textPass, singleBulletViolations };
 }
-export function formatReport(r: GateReport): string {
+export function formatReport(r: GateReport, includeNextSteps = true): string {
   return [
     `Gate 1 — rendered content length (${r.layout.style}, ${r.layout.paper})`,
     ...r.sections.flatMap(s => s.checks === false ? [`  ${s.section}: SKIP (checks disabled; AI editable: ${s.editable})`] : [
@@ -128,6 +128,6 @@ export function formatReport(r: GateReport): string {
     "Gate 3 — text copies cleanly (no private-use characters)",
     ...r.privateUse.map(cp => `  private-use mapping: U+${cp.toString(16).toUpperCase()}`),
     `  ${r.textPass ? "PASS" : "FAIL"}`, "",
-    r.pass ? "OK — all gates passed." : "FAIL — revise the flagged content or layout, then rebuild.",
+    r.pass ? "OK — all gates passed." : includeNextSteps ? "FAIL — revise the flagged content or layout, then rebuild." : "FAIL — quality gates failed.",
   ].join("\n");
 }

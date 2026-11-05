@@ -6,6 +6,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { layoutToClassOptions, resolveConfig, type LayoutOptions } from "../project/config.ts";
 import { hash, manifestPath, parseMeasurements, type BuildManifest } from "./measurements.ts";
 import { resolveInputs } from "../content/tex.ts";
+import { InterruptedError } from "../errors.ts";
 
 import { TEMPLATE_DIR, FONT_DIR } from "./assets.ts";
 export { TEMPLATE_DIR, FONT_DIR } from "./assets.ts";
@@ -16,7 +17,13 @@ export interface BuildResult {
   manifestPath: string;
   output: string;
 }
-export class BuildError extends Error {}
+export class BuildError extends Error {
+  readonly reason: string;
+  constructor(message?: string, reasonOrOptions: string | ErrorOptions = "compile_failed") {
+    super(message, typeof reasonOrOptions === "string" ? undefined : reasonOrOptions);
+    this.reason = typeof reasonOrOptions === "string" ? reasonOrOptions : "compile_failed";
+  }
+}
 export type TexEngine = "xelatex" | "tectonic";
 
 /** XeLaTeX when installed, else Tectonic, which downloads TeX packages on first use. */
@@ -27,6 +34,7 @@ export function texEngine(): TexEngine | null {
 }
 /** Whether Tectonic has built its format before; until then a build downloads about 45 MB. */
 export function tectonicCacheReady(): boolean {
+  if (!Bun.which("tectonic")) return false;
   const result = Bun.spawnSync(["tectonic", "-X", "show", "user-cache-dir"], { stdout: "pipe", stderr: "pipe", timeout: 10_000 });
   return result.exitCode === 0 && existsSync(join(dirname(result.stdout.toString().trim()), "formats"));
 }
@@ -55,12 +63,15 @@ export async function compile(texPath: string, options: string | BuildOptions = 
   // Neither old PDFs nor old measurements may survive a failed compile.
   await Promise.all([pdfPath, metadataPath, measurementPath].map(p => rm(p, { force: true })));
   const engine = texEngine();
-  if (!engine) throw new BuildError("no TeX engine found; install Tectonic (brew install tectonic), then run resumectl doctor");
+  if (!engine) throw new BuildError("no TeX engine found; install Tectonic with brew install tectonic", "dependency_missing");
   const setup = `\\edef\\ResumeFontDir{${texPathLiteral(FONT_DIR + "/")}}\\def\\ResumeMeasure{1}`
     + `\\def\\ResumeConfigOptions{${layoutToClassOptions(config.layout)}}`;
   // Tectonic reads a file rather than TeX code; a same-named wrapper keeps the job name.
   const wrapperDir = engine === "tectonic" ? await mkdtemp(join(tmpdir(), "resumectl-")) : null;
-  let proc: ReturnType<typeof Bun.spawnSync>;
+  let output = "";
+  let exitCode: number;
+  let signalCode: NodeJS.Signals | null;
+  let interrupted = false;
   try {
     let command: string[];
     if (wrapperDir) {
@@ -72,18 +83,47 @@ export async function compile(texPath: string, options: string | BuildOptions = 
       command = ["xelatex", "-interaction=nonstopmode", "-halt-on-error", "-no-shell-escape",
         `-output-directory=${out}`, `-jobname=${job}`, `${setup}\\input{${texPathLiteral(basename(texPath))}}`];
     }
-    proc = Bun.spawnSync(command, {
-      cwd: dirname(texPath),
-      env: { ...process.env, TEXINPUTS: `${TEMPLATE_DIR}//:${process.env.TEXINPUTS ?? ""}` },
-      stdout: "pipe", stderr: "pipe",
-    });
+    let proc: Bun.Subprocess<"ignore", "pipe", "pipe">;
+    try {
+      proc = Bun.spawn(command, {
+        cwd: dirname(texPath),
+        env: { ...process.env, TEXINPUTS: `${TEMPLATE_DIR}//:${process.env.TEXINPUTS ?? ""}` },
+        stdin: "ignore", stdout: "pipe", stderr: "pipe",
+      });
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      throw new BuildError(`could not start ${engine}: ${(error as Error).message}`, code === "ENOENT" ? "dependency_missing" : "spawn_failed");
+    }
+    let killTimer: ReturnType<typeof setTimeout> | undefined;
+    const interrupt = () => {
+      interrupted = true;
+      proc.kill("SIGINT");
+      // Bound cleanup even if the engine ignores SIGINT. A second Ctrl+C uses
+      // the runtime's default immediate exit because this listener runs once.
+      killTimer = setTimeout(() => proc.kill("SIGKILL"), 2_000);
+    };
+    process.once("SIGINT", interrupt);
+    try {
+      const [code, stdout, stderr] = await Promise.all([
+        proc.exited, new Response(proc.stdout).text(), new Response(proc.stderr).text(),
+      ]);
+      exitCode = code;
+      signalCode = proc.signalCode;
+      output = (stdout + stderr).split("\n").slice(-40).join("\n");
+    } finally {
+      process.removeListener("SIGINT", interrupt);
+      if (killTimer !== undefined) clearTimeout(killTimer);
+    }
   } finally {
     if (wrapperDir) await rm(wrapperDir, { recursive: true, force: true });
   }
-  const output = (proc.stdout!.toString() + proc.stderr!.toString()).split("\n").slice(-40).join("\n");
-  if (proc.exitCode !== 0 || !await Bun.file(pdfPath).exists()) {
+  if (interrupted || signalCode === "SIGINT" || exitCode === 130) {
     await rm(pdfPath, { force: true });
-    throw new BuildError(`${engine} failed${proc.signalCode ? ` (${proc.signalCode})` : ""}\n\n${output}`);
+    throw new InterruptedError();
+  }
+  if (exitCode !== 0 || !await Bun.file(pdfPath).exists()) {
+    await rm(pdfPath, { force: true });
+    throw new BuildError(`${engine} failed${signalCode ? ` (${signalCode})` : ""}\n\n${output}`);
   }
   if (!await Bun.file(measurementPath).exists()) throw new BuildError("the resume class did not emit layout measurements; remove any outdated local resume.cls");
   const log = await Bun.file(logPath).text();

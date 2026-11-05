@@ -70,7 +70,7 @@ export async function doctor(): Promise<DoctorReport> {
   return { pass: checks.every(c => c.ok), checks };
 }
 
-export function formatDoctor(report: DoctorReport): string {
-  return report.checks.map(c => `${c.ok ? "PASS" : "FAIL"} ${c.name}: ${c.detail}${!c.ok && c.fix ? `\n  ${c.fix}` : ""}`).join("\n")
-    + `\n\n${report.pass ? "OK — build dependencies are available." : "Fix the failed checks before building."}`;
+export function formatDoctor(report: DoctorReport, includeNextSteps = true): string {
+  return report.checks.map(c => `${c.ok ? "PASS" : "FAIL"} ${c.name}: ${c.detail}${includeNextSteps && !c.ok && c.fix ? `\n  ${c.fix}` : ""}`).join("\n")
+    + `\n\n${report.pass ? "OK — build dependencies are available." : includeNextSteps ? "Fix the failed checks before building." : "FAIL — build dependencies are unavailable."}`;
 }

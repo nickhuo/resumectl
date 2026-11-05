@@ -194,13 +194,13 @@ export async function resolveConfig(options: { texPath?: string; configPath?: st
   if (configPath) {
     if (!/\.ya?ml$/i.test(configPath)) throw new InputError("config files must use .yaml or .yml");
     if (!Bun.YAML) throw new InputError("YAML configuration requires Bun >= 1.3; upgrade Bun first");
-    if (!await Bun.file(configPath).exists()) throw new InputError(`config not found: ${configPath}`);
+    if (!await Bun.file(configPath).exists()) throw new InputError(`config not found: ${configPath}`, "missing_input");
     try { file = validateConfig(Bun.YAML.parse(await Bun.file(configPath).text()) ?? {}); }
     catch (error) { throw new InputError(`${configPath}: ${(error as Error).message}`); }
   }
   let source: ConfigInput = {};
   if (texPath) {
-    if (!await Bun.file(texPath).exists()) throw new InputError(`TeX source not found: ${texPath}`);
+    if (!await Bun.file(texPath).exists()) throw new InputError(`TeX source not found: ${texPath}`, "missing_input");
     source = { layout: readSourceLayout(await resolveInputs(await Bun.file(texPath).text(), texPath)) };
   }
   const overrides = validateConfig(options.overrides ?? {});

@@ -109,6 +109,12 @@ Prioritize bullets scoring 8–10. For a score of 7, address the weakest dimensi
 
 Run the CLI as `bunx resumectl@0.2.1 <command>`. Bun downloads it on first use, so nothing needs cloning. Inside the resumectl repository, `bun run resumectl <command>` is equivalent.
 
+Use `help <command>`, `<command> --help` or `config <action> --help` for offline help at every depth; bare invocations of the CLI or `config` show help and exit 0. `--version` (`-v`) prints only the version. Help remains text and version remains a bare string even with `--json`.
+
+With `--json`, completed results remain on stdout, with no progress or download notices on stderr. Errors before a report emit no stdout and one single-line JSON document on stderr with `status` (`action_required` for missing input, otherwise `error`), stable snake_case `reason`, `message` and `retryable` (currently false). Exit 2 means invalid/missing input; exit 1 means compile, dependency or operational failure. Completed build/check reports with failed gates, and doctor reports with failed checks, still go to stdout and exit 1: inspect the report rather than expecting an error document. Ctrl+C during compilation exits 130, reports `interrupted`, and provides no quality report. Human mode keeps progress and next steps on stderr and results on stdout.
+
+Options are command-specific: `check` rejects `--keep-logs` and `--no-keep-logs`; only `check` accepts `--pdf`, which cannot combine with `--out-dir`. Both build and check retain section, threshold and layout overrides. `config show` is readable text by default; always use `--json` when consuming effective config. `config init` accepts `--config <path>` and `--json`.
+
 ### Set up once
 
 Run `bunx resumectl@0.2.1 doctor` before writing anything, and fix failures with the user:

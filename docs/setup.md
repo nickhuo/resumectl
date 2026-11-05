@@ -11,7 +11,7 @@ brew install tectonic                                                       # ma
 curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh  # Linux and others
 ```
 
-The first build downloads about 45 MB of packages and takes a couple of minutes. `build` says so on stderr. Later builds take seconds and work offline.
+The first build downloads about 45 MB of packages and takes a couple of minutes. Human-mode `build` says so on stderr; `--json` suppresses the notice and all progress. Later builds take seconds and work offline.
 
 Tectonic ships an older LaTeX format (2021). `resume.cls` backports the two newer features it relies on, so both styles render identically to XeLaTeX. The test suite checks this whenever both engines are installed.
 
@@ -29,3 +29,5 @@ TinyTeX-1 already includes `fontspec`, `kvoptions`, `geometry`, `hyperref`, `url
 ## Check
 
 Run `bunx resumectl doctor` (or `bun run resumectl doctor` in this repository). It reports a missing Bun, TeX engine, TeX package or bundled asset without installing anything. A passing doctor confirms availability; `build` is the end-to-end check.
+
+`doctor --json` returns its report on stdout and exits 1 when checks fail. A compiler executable missing from PATH also exits 1; missing input files exit 2. Use `resumectl help doctor` or `resumectl help build` without a working toolchain. See the [CLI reference](cli.md) for machine errors and cancellation.
