@@ -107,11 +107,11 @@ Prioritize bullets scoring 8–10. For a score of 7, address the weakest dimensi
 
 ## resumectl workflow
 
-Run the CLI as `bunx resumectl@0.2.0 <command>`. Bun downloads it on first use, so nothing needs cloning. Inside the resumectl repository, `bun run resumectl <command>` is equivalent.
+Run the CLI as `bunx resumectl@0.2.1 <command>`. Bun downloads it on first use, so nothing needs cloning. Inside the resumectl repository, `bun run resumectl <command>` is equivalent.
 
 ### Set up once
 
-Run `bunx resumectl@0.2.0 doctor` before writing anything, and fix failures with the user:
+Run `bunx resumectl@0.2.1 doctor` before writing anything, and fix failures with the user:
 
 - **`bunx` not found, or Bun below 1.3:** ask the user to install Bun (`curl -fsSL https://bun.sh/install | bash`) or run `bun upgrade`.
 - **`TeX engine` missing:** recommend Tectonic, a ~16 MB program that downloads only the TeX packages it needs. Install it with `brew install tectonic` on macOS, or `curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh` elsewhere ([other options](https://tectonic-typesetting.github.io/install.html)). Ask before installing anything.
@@ -121,12 +121,12 @@ Repeat `doctor` until it passes. With Tectonic, the first build needs network ac
 
 ### Build and revise
 
-For a new résumé, run `bunx resumectl@0.2.0 init <directory> --style sans`, then replace the placeholder content. `init` refuses to overwrite existing résumé source or configuration. Use `--style serif` only if the user asks for it.
+For a new résumé, run `bunx resumectl@0.2.1 init <directory> --style sans`, then replace the placeholder content. `init` refuses to overwrite existing résumé source or configuration. Use `--style serif` only if the user asks for it.
 
 ```bash
-bunx resumectl@0.2.0 config show path/to/resume.tex --json
-bunx resumectl@0.2.0 build path/to/resume.tex --json
-bunx resumectl@0.2.0 check path/to/resume.tex --json
+bunx resumectl@0.2.1 config show path/to/resume.tex --json
+bunx resumectl@0.2.1 build path/to/resume.tex --json
+bunx resumectl@0.2.1 check path/to/resume.tex --json
 ```
 
 Read `config show` before editing:
