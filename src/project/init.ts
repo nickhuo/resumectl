@@ -41,7 +41,7 @@ export async function initConfig(path = CONFIG_NAME): Promise<{ configPath: stri
   return { configPath: path, config };
 }
 
-/** Create editable source and policy together; never replace an existing résumé or config. */
+/** Create editable source and policy together; never replace an existing resume or config. */
 export async function initProject(directory = ".", options: Partial<StarterOptions> = {}) {
   const config = starterConfig(options);
   const target = resolve(directory);

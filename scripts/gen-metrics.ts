@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { readFontMetrics } from "../src/rendering/font-metrics.ts";
 
 const root = join(import.meta.dir, "..");
-// Printable ASCII plus the punctuation résumés tend to use.
+// Printable ASCII plus the punctuation resumes tend to use.
 const CHARS = Array.from({ length: 95 }, (_, i) => String.fromCharCode(32 + i)).join("") + "–—·•→←↑↓↗×±≈≤≥°€£’‘“”…";
 
 function kpsewhich(file: string): string {

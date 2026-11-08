@@ -7,7 +7,7 @@ import { InputError } from "../errors.ts";
 import { initConfig, initProject } from "../project/init.ts";
 import { doctor, formatDoctor } from "../project/doctor.ts";
 
-const USAGE = `resumectl — configure, render and check a résumé
+const USAGE = `resumectl — configure, render and check a resume
 
 Usage
   resumectl init [directory] [--style <serif|sans>] [--paper <a4|letter>] [--json]

@@ -1,4 +1,4 @@
-// Reading the parts of a résumé .tex the gates care about.
+// Reading the parts of a resume .tex the gates care about.
 import { dirname, join } from "node:path";
 import { InputError } from "../errors.ts";
 

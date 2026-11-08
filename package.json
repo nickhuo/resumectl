@@ -1,7 +1,7 @@
 {
   "name": "resumectl",
   "version": "0.2.1",
-  "description": "Clean LaTeX résumé templates and PDF quality checks for coding-agent workflows.",
+  "description": "Clean LaTeX resume templates and PDF quality checks for coding-agent workflows.",
   "license": "MIT",
   "type": "module",
   "module": "src/index.ts",

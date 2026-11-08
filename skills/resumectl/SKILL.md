@@ -1,19 +1,19 @@
 ---
 name: resumectl
-description: Write, rewrite, tailor, score, or review résumé/CV bullets, summaries, sections, or a complete résumé against a target role or job description. Use with resumectl to turn verified career evidence into concise LaTeX content and validate the rendered PDF.
+description: Write, rewrite, tailor, score, or review resume/CV bullets, summaries, sections, or a complete resume against a target role or job description. Use with resumectl to turn verified career evidence into concise LaTeX content and validate the rendered PDF.
 ---
 
 # Resume Methodology
 
 ## Inputs and evidence
 
-Identify the target role or job description (JD), the candidate's career evidence, and the `.tex` file to edit. Use information already provided. If the JD is missing, proceed with a general review and state that the résumé has not yet been tailored to a specific role.
+Identify the target role or job description (JD), the candidate's career evidence, and the `.tex` file to edit. Use information already provided. If the JD is missing, proceed with a general review and state that the resume has not yet been tailored to a specific role.
 
 - Every employer, responsibility, ownership claim, technology and metric must be traceable to the user's materials.
 - Never guess a metric. Use verified scope or observable outcomes; ask the user when an essential fact is missing.
 - Placeholders such as `[N endpoints]` and `[latency %]` belong only in drafts awaiting confirmation. Replace or remove them before delivery.
 - Examples in this skill illustrate writing structure. They are not facts about the candidate.
-- Treat the user-designated `.tex` file and its `\input` files as the content source. Do not maintain a separate Markdown résumé that can drift out of sync.
+- Treat the user-designated `.tex` file and its `\input` files as the content source. Do not maintain a separate Markdown resume that can drift out of sync.
 
 ## Writing workflow
 
@@ -40,7 +40,7 @@ Evaluate each item by whether it helps a recruiter judge the candidate's fit wit
 - Keep coursework and routine projects only when they fill a gap in evidence for the target role.
 - Do not add weak content just to fill a page.
 - Give every role at least two bullets. A single bullet cannot show the range of the work, and it reads as padding. If a role has only one verified accomplishment, ask the user for more evidence or remove the role. Versions after 0.2.1 fail the build on this; 0.2.1 does not, so count per role yourself.
-- Remove roles unrelated to the target job instead of shrinking them to fit the page. A résumé is a selection, not a complete history. When space runs short, drop the least relevant role entirely before cutting any remaining role below two bullets.
+- Remove roles unrelated to the target job instead of shrinking them to fit the page. A resume is a selection, not a complete history. When space runs short, drop the least relevant role entirely before cutting any remaining role below two bullets.
 - Tell the user which roles you removed, since the timeline may now have gaps they need to explain. Never shift dates or titles to hide a gap.
 
 Choose the emphasis for the role without changing the facts: AI Engineer roles prioritize agents, RAG, evaluations and production reliability; SWE roles prioritize backend systems, system design, performance and engineering quality; Data roles prioritize pipelines, experiments, data quality and decision impact.
@@ -124,7 +124,7 @@ Repeat `doctor` until it passes. With Tectonic, the first build needs network ac
 
 ### Build and revise
 
-For a new résumé, run `bunx resumectl@0.2.1 init <directory> --style sans`, then replace the placeholder content. `init` refuses to overwrite existing résumé source or configuration. Use `--style serif` only if the user asks for it.
+For a new resume, run `bunx resumectl@0.2.1 init <directory> --style sans`, then replace the placeholder content. `init` refuses to overwrite existing resume source or configuration. Use `--style serif` only if the user asks for it.
 
 ```bash
 bunx resumectl@0.2.1 config show path/to/resume.tex --json
@@ -145,7 +145,7 @@ Rebuild after every content or layout change. Use each failing entry's `section`
 
 1. Too many lines: follow the compression order and preserve the strongest evidence.
 2. Sparse final line: first try compressing to one line. Alternatively, add a mechanism or result already supported by the user's materials; never invent content.
-3. Overflow or excess pages: remove the least relevant role or weaker content, and inspect long links, unbreakable text and tables. Do not make the résumé difficult to read just to pass.
+3. Overflow or excess pages: remove the least relevant role or weaker content, and inspect long links, unbreakable text and tables. Do not make the resume difficult to read just to pass.
 4. Role below the minimum bullets (`ROLE-MIN-BULLETS`): add a second bullet supported by the user's materials, or remove the role if it does not help the target job. Never invent content.
 5. Private-use character mappings: inspect the font or template; do not ignore broken text copying.
 6. Missing measurements or mismatched hashes: rebuild rather than editing `.resumectl.json` by hand.

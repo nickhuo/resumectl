@@ -1,4 +1,4 @@
-% resume.cls — a one-page résumé class with a serif and a sans-serif style.
+% resume.cls — a one-page resume class with a serif and a sans-serif style.
 % Compile with XeLaTeX. MIT License.
 %
 %   \documentclass{resume}                       % serif (TeX Gyre Termes)

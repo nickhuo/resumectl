@@ -1,6 +1,6 @@
 # Glossary
 
-resumectl has one domain context: authoring, rendering and checking a résumé from verified career evidence.
+resumectl has one domain context: authoring, rendering and checking a resume from verified career evidence.
 
 | Term | Meaning | Owner |
 |---|---|---|
