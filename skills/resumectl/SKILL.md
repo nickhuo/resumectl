@@ -39,6 +39,9 @@ Evaluate each item by whether it helps a recruiter judge the candidate's fit wit
 - When two bullets prove the same capability, keep the stronger one.
 - Keep coursework and routine projects only when they fill a gap in evidence for the target role.
 - Do not add weak content just to fill a page.
+- Give every role at least two bullets. A single bullet cannot show the range of the work, and it reads as padding. If a role has only one verified accomplishment, ask the user for more evidence or remove the role. Versions after 0.2.1 fail the build on this; 0.2.1 does not, so count per role yourself.
+- Remove roles unrelated to the target job instead of shrinking them to fit the page. A résumé is a selection, not a complete history. When space runs short, drop the least relevant role entirely before cutting any remaining role below two bullets.
+- Tell the user which roles you removed, since the timeline may now have gaps they need to explain. Never shift dates or titles to hide a gap.
 
 Choose the emphasis for the role without changing the facts: AI Engineer roles prioritize agents, RAG, evaluations and production reliability; SWE roles prioritize backend systems, system design, performance and engineering quality; Data roles prioritize pipelines, experiments, data quality and decision impact.
 
@@ -142,9 +145,10 @@ Rebuild after every content or layout change. Use each failing entry's `section`
 
 1. Too many lines: follow the compression order and preserve the strongest evidence.
 2. Sparse final line: first try compressing to one line. Alternatively, add a mechanism or result already supported by the user's materials; never invent content.
-3. Overflow or excess pages: remove weaker content and inspect long links, unbreakable text and tables. Do not make the résumé difficult to read just to pass.
-4. Private-use character mappings: inspect the font or template; do not ignore broken text copying.
-5. Missing measurements or mismatched hashes: rebuild rather than editing `.resumectl.json` by hand.
+3. Overflow or excess pages: remove the least relevant role or weaker content, and inspect long links, unbreakable text and tables. Do not make the résumé difficult to read just to pass.
+4. Role below the minimum bullets (`ROLE-MIN-BULLETS`): add a second bullet supported by the user's materials, or remove the role if it does not help the target job. Never invent content.
+5. Private-use character mappings: inspect the font or template; do not ignore broken text copying.
+6. Missing measurements or mismatched hashes: rebuild rather than editing `.resumectl.json` by hand.
 
 All three quality gates must pass: actual rendered content length and overflow, page count, and PDF private-use character mappings. `check` uses the existing PDF and its matching `.resumectl.json` manifest. Content or layout changes require a rebuild; changes only to checking thresholds can be rechecked directly.
 
@@ -152,6 +156,7 @@ All three quality gates must pass: actual rendered content length and overflow, 
 
 - Support the role's priorities with real evidence and list any unresolved factual gaps.
 - Give each bullet an action, mechanism and result, with the strongest evidence first.
+- Confirm every remaining role has at least two bullets, and list the roles you removed.
 - Do not alter dates, job titles, schools or other facts to make the layout fit.
 - Remove all draft placeholders from the final file.
 - Require a fresh build with exit code 0 and all three gates reporting PASS. Record the PDF path and verification result.

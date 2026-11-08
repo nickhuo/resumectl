@@ -76,7 +76,7 @@
       "properties": {
         "maxLines": { "type": "integer", "minimum": 1, "maximum": 100, "description": "Maximum actual rendered lines per entry; inherited default 2." },
         "minLastLineFill": { "type": "number", "minimum": 0, "maximum": 1, "description": "Minimum fraction of the final line occupied by an entry, including single-line entries. Inherited default 0.8; 0 disables the minimum fill check." },
-        "minBullets": { "type": "integer", "minimum": 1, "maximum": 1000, "description": "Minimum number of bullets (\\item entries) a section must contain; inherited default 2. Set to 1 to allow single-entry sections." }
+        "minBullets": { "type": "integer", "minimum": 1, "maximum": 1000, "description": "Minimum bullets (\\item entries) for each \\datedsubsection role in the section; a section with no dated roles counts all its entries. Inherited default 1; set 2 on WORK EXPERIENCE to require two bullets per role." }
       }
     },
     "absoluteLength": { "type": "string", "pattern": "^(?:[0-9]+(?:\\.[0-9]+)?|\\.[0-9]+)(?:pt|mm|cm|in|pc)$" },
