@@ -147,7 +147,7 @@ test("paper, margins and indentation change the measured available width", async
 
 test("CLI style override changes the font actually compiled; explicit YAML wins over discovered config", async () => {
   const tex = join(root, "override.tex");
-  await Bun.write(tex, document([sentence]));
+  await Bun.write(tex, document([sentence, sentence]));
   const configPath = join(root, "explicit.yaml");
   await Bun.write(configPath, "layout:\n  style: serif\n  scale: 0.7\nbuild:\n  outDir: explicit-output\n  keepLogs: true\n");
   const discovered = join(root, "resume.config.yaml");

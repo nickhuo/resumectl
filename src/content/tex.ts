@@ -67,6 +67,25 @@ function sectionBody(tex: string, section: string): string {
   return headings.flatMap((h, i) => sectionKey(h[1]) === sectionKey(section)
     ? [tex.slice(h.index! + h[0].length, headings[i + 1]?.index)] : []).join("\n");
 }
+/** Bullet count for each \datedsubsection role in the named section; empty when the section has no dated roles. */
+export function extractRoleBulletCounts(tex: string, section: string): { role: string; count: number }[] {
+  const block = sectionBody(tex, section);
+  const starts = [...block.matchAll(/\\datedsubsection\b/g)].map(m => m.index!);
+  return starts.map((start, i) => {
+    const body = block.slice(start, starts[i + 1]);
+    const open = body.indexOf("{");
+    let depth = 1, end = open + 1;
+    for (; end < body.length && depth > 0; end++) {
+      if (body[end] === "\\") { end++; continue; }
+      if (body[end] === "{") depth++;
+      if (body[end] === "}") depth--;
+    }
+    return {
+      role: stripToVisible(body.slice(open + 1, end - 1)),
+      count: [...body.matchAll(/\\item\b|\\resumeentry\s*\{/g)].length,
+    };
+  });
+}
 /** Source snippets for measured lists and explicit paragraph/table entries, in render order. */
 export function extractSectionEntries(tex: string, section: string): string[] {
   const block = sectionBody(tex, section);

@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { checkBullets, type GateOptions } from "../../src/quality/gates.ts";
+import { checkBullets, findThinRoles, type GateOptions } from "../../src/quality/gates.ts";
 import { DEFAULT_CHECKS } from "../../src/project/config.ts";
 import type { RenderedBullet } from "../../src/rendering/measurements.ts";
 
@@ -50,4 +50,34 @@ test("section_min_bullets: minBullets:2 explicitly enforces the rule on a sectio
   expect(oneBullet.length < enforcedOptions.bullets.minBullets).toBe(true);
   const twoBullets = [makeBullet(), makeBullet()];
   expect(twoBullets.length >= enforcedOptions.bullets.minBullets).toBe(true);
+});
+
+const ROLES_TEX = String.raw`
+\section{WORK EXPERIENCE}
+\datedsubsection{\textbf{Acme}}{2024}
+\begin{itemize}
+\item First bullet.
+\item Second bullet.
+\end{itemize}
+\datedsubsection{\textbf{Beta \& Co}}{2023}
+\begin{itemize}
+\item Only bullet.
+% \item Commented-out bullet.
+\end{itemize}
+\section{SKILLS}
+\resumeentry{Python, SQL}
+`;
+
+test("findThinRoles: names each role below the minimum, even when the section total is enough", () => {
+  expect(findThinRoles(ROLES_TEX, "WORK EXPERIENCE", 2)).toEqual([{ role: "Beta & Co", count: 1 }]);
+});
+
+test("findThinRoles: every role at the minimum passes", () => {
+  expect(findThinRoles(ROLES_TEX, "WORK EXPERIENCE", 1)).toEqual([]);
+  const full = ROLES_TEX.replace("\\item Only bullet.", "\\item Only bullet.\n\\item Another bullet.");
+  expect(findThinRoles(full, "WORK EXPERIENCE", 2)).toEqual([]);
+});
+
+test("findThinRoles: a section without dated roles has no thin roles", () => {
+  expect(findThinRoles(ROLES_TEX, "SKILLS", 2)).toEqual([]);
 });

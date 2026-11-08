@@ -3,7 +3,7 @@ import { DEFAULT_CHECKS, layoutToClassOptions, validateConfig, type BulletOption
 import { InputError } from "../errors.ts";
 import { hash, readManifest, type RenderedBullet } from "../rendering/measurements.ts";
 import { countPdfPages, findPrivateUseMappings } from "./pdf.ts";
-import { type ClassOptions, extractSectionEntries, resolveInputs, sectionKey, stripToVisible } from "../content/tex.ts";
+import { type ClassOptions, extractRoleBulletCounts, extractSectionEntries, resolveInputs, sectionKey, stripToVisible } from "../content/tex.ts";
 
 export type GateOptions = CheckOptions & { sections?: Record<string, SectionInput> };
 export type GateOverrides = Partial<Omit<GateOptions, "bullets">> & { bullets?: Partial<GateOptions["bullets"]> };
@@ -17,8 +17,21 @@ export interface BulletResult extends RenderedBullet {
 export interface SingleBulletViolation {
   key: "section_min_bullets";
   section: string;
+  role?: string;
   count: number;
   bullet: string;
+}
+export interface ThinRole {
+  role: string;
+  count: number;
+}
+/** Roles with fewer bullets than the minimum. A minimum of 1 keeps sections free to list roles with no bullets, such as education. */
+export function findThinRoles(tex: string, section: string, minimum: number): ThinRole[] {
+  if (minimum <= 1) return [];
+  return extractRoleBulletCounts(tex, section).filter(r => r.count < minimum);
+}
+function thinRoleLines(section: string, roles: ThinRole[], minimum: number): string[] {
+  return roles.map(r => `    ROLE-MIN-BULLETS ${section}: ${r.role} has ${r.count} bullet${r.count === 1 ? "" : "s"}, needs at least ${minimum}`);
 }
 export interface GateReport {
   classOptions: ClassOptions;
@@ -41,6 +54,7 @@ export interface SectionResult {
   editable: boolean;
   checks: BulletOptions | false;
   bullets: BulletResult[];
+  thinRoles: ThinRole[];
   minBulletsMet: boolean;
   pass: boolean;
 }
@@ -81,12 +95,17 @@ export async function runGates(texPath: string, pdfPath: string, overrides: Gate
   const sections: SectionResult[] = selected.map(section => {
     const policy = policies.get(section);
     const editable = policy?.editable ?? false;
-    if (policy?.checks === false) return { section, editable, checks: false, bullets: [], minBulletsMet: true, pass: true };
-    const checks = { ...options.bullets, ...policy?.checks };
+    if (policy?.checks === false) return { section, editable, checks: false, bullets: [], thinRoles: [], minBulletsMet: true, pass: true };
+    // Without a section policy, work experience still needs two bullets per role. Set minBullets: 1 on the section to opt out.
+    const unconfiguredWork = !policy && section === sectionKey("WORK EXPERIENCE");
+    const checks = { ...options.bullets, ...(unconfiguredWork ? { minBullets: Math.max(options.bullets.minBullets, 2) } : {}), ...policy?.checks };
     const bullets = checkBullets(manifest.bullets, { ...options, section, bullets: checks }, extractSectionEntries(tex, section));
     if (!bullets.length) throw new InputError(`found no rendered bullets or entries in section "${section}"; check the section name or wrap prose/table descriptions in \\resumeentry{...}`);
-    const minBulletsMet = bullets.length >= checks.minBullets;
-    return { section, editable, checks, bullets, minBulletsMet, pass: bullets.every(b => b.status === "ok") && minBulletsMet };
+    const thinRoles = findThinRoles(tex, section, checks.minBullets);
+    // Sections with dated roles count per role; other sections count all their entries.
+    const hasRoles = extractRoleBulletCounts(tex, section).length > 0;
+    const minBulletsMet = thinRoles.length === 0 && (hasRoles || bullets.length >= checks.minBullets);
+    return { section, editable, checks, bullets, thinRoles, minBulletsMet, pass: bullets.every(b => b.status === "ok") && minBulletsMet };
   });
   const bullets = sections.flatMap(s => s.bullets);
   let pages = countPdfPages(bytes);
@@ -99,12 +118,14 @@ export async function runGates(texPath: string, pdfPath: string, overrides: Gate
   const bulletsPass = bullets.every(b => b.status === "ok") && manifest.overflows.length === 0;
   const singleBulletViolations: SingleBulletViolation[] = sections
     .filter(s => s.checks !== false && !s.minBulletsMet)
-    .map(s => ({
-      key: "section_min_bullets" as const,
-      section: s.section,
-      count: s.bullets.length,
-      bullet: s.bullets[0]?.text.slice(0, 90) ?? "",
-    }));
+    .flatMap(s => s.thinRoles.length
+      ? s.thinRoles.map(r => ({ key: "section_min_bullets" as const, section: s.section, role: r.role, count: r.count, bullet: "" }))
+      : [{
+        key: "section_min_bullets" as const,
+        section: s.section,
+        count: s.bullets.length,
+        bullet: s.bullets[0]?.text.slice(0, 90) ?? "",
+      }]);
   const minBulletsPass = singleBulletViolations.length === 0;
   const pagesPass = pages <= options.maxPages;
   const textPass = privateUse.length === 0;
@@ -119,7 +140,8 @@ export function formatReport(r: GateReport): string {
       `  ${s.section}: ≤ ${s.checks.maxLines} line${s.checks.maxLines === 1 ? "" : "s"}, last line ≥ ${Math.round(s.checks.minLastLineFill * 100)}% full, ≥ ${s.checks.minBullets} bullet${s.checks.minBullets === 1 ? "" : "s"}; AI editable: ${s.editable}`,
       `    ${s.bullets.length} ${s.bullets.length === 1 ? "entry" : "entries"} — ${s.pass ? "PASS" : "FAIL"}`,
       ...s.bullets.filter(b => b.status !== "ok").map(b => `    ${b.status.toUpperCase()} ${s.section} #${b.index}: ${b.lines} lines, last line ${(b.lastLineFill * 100).toFixed(1)}% full${b.text ? ` — ${b.text.slice(0, 80)}${b.text.length > 80 ? "…" : ""}` : ""}`),
-      ...(s.minBulletsMet ? [] : [`    SECTION-MIN-BULLETS ${s.section}: only ${s.bullets.length} bullet — ${s.bullets[0]?.text.slice(0, 80) ?? ""}${(s.bullets[0]?.text.length ?? 0) > 80 ? "…" : ""}`]),
+      ...thinRoleLines(s.section, s.thinRoles, s.checks.minBullets),
+      ...(s.minBulletsMet || s.thinRoles.length ? [] : [`    SECTION-MIN-BULLETS ${s.section}: only ${s.bullets.length} bullet — ${s.bullets[0]?.text.slice(0, 80) ?? ""}${(s.bullets[0]?.text.length ?? 0) > 80 ? "…" : ""}`]),
     ]),
     ...r.overflows.map(s => `  OVERFLOW: ${s}`),
     `  ${r.bulletsPass && r.minBulletsPass ? "PASS" : "FAIL"}`, "",

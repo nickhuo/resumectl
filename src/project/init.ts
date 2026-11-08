@@ -10,7 +10,7 @@ function starterConfig(options: Partial<StarterOptions>): ConfigInput {
     version: 1,
     layout: { style: "serif", paper: "a4", ...options },
     checks: structuredClone(DEFAULT_CHECKS),
-    sections: { "WORK EXPERIENCE": { editable: true, checks: { ...DEFAULT_CHECKS.bullets } } },
+    sections: { "WORK EXPERIENCE": { editable: true, checks: { ...DEFAULT_CHECKS.bullets, minBullets: 2 } } },
     build: { outDir: "./output", keepLogs: false },
   });
 }
@@ -65,6 +65,7 @@ export async function initProject(directory = ".", options: Partial<StarterOptio
 \datedline{\role{Role}}{Location}
 \begin{itemize}
 \item Replace this sample with a verified accomplishment: describe your action, technical approach, and measurable impact.
+\item Replace this sample with a second verified accomplishment: every role needs at least two bullets to pass the checks.
 \end{itemize}
 
 % Add other sections and their editing/checking policies in resume.config.yaml.
