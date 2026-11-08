@@ -39,7 +39,7 @@ Evaluate each item by whether it helps a recruiter judge the candidate's fit wit
 - When two bullets prove the same capability, keep the stronger one.
 - Keep coursework and routine projects only when they fill a gap in evidence for the target role.
 - Do not add weak content just to fill a page.
-- Give every role at least two bullets. A single bullet cannot show the range of the work, and it reads as padding. If a role has only one verified accomplishment, ask the user for more evidence or remove the role. Versions after 0.2.1 fail the build on this; 0.2.1 does not, so count per role yourself.
+- Give every role at least two bullets. A single bullet cannot show the range of the work, and it reads as padding. If a role has only one verified accomplishment, ask the user for more evidence or remove the role.
 - Remove roles unrelated to the target job instead of shrinking them to fit the page. A resume is a selection, not a complete history. When space runs short, drop the least relevant role entirely before cutting any remaining role below two bullets.
 - Tell the user which roles you removed, since the timeline may now have gaps they need to explain. Never shift dates or titles to hide a gap.
 
@@ -110,11 +110,11 @@ Prioritize bullets scoring 8–10. For a score of 7, address the weakest dimensi
 
 ## resumectl workflow
 
-Run the CLI as `bunx resumectl@0.2.1 <command>`. Bun downloads it on first use, so nothing needs cloning. Inside the resumectl repository, `bun run resumectl <command>` is equivalent.
+Run the CLI as `bunx resumectl@0.2.2 <command>`. Bun downloads it on first use, so nothing needs cloning. Inside the resumectl repository, `bun run resumectl <command>` is equivalent.
 
 ### Set up once
 
-Run `bunx resumectl@0.2.1 doctor` before writing anything, and fix failures with the user:
+Run `bunx resumectl@0.2.2 doctor` before writing anything, and fix failures with the user:
 
 - **`bunx` not found, or Bun below 1.3:** ask the user to install Bun (`curl -fsSL https://bun.sh/install | bash`) or run `bun upgrade`.
 - **`TeX engine` missing:** recommend Tectonic, a ~16 MB program that downloads only the TeX packages it needs. Install it with `brew install tectonic` on macOS, or `curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh` elsewhere ([other options](https://tectonic-typesetting.github.io/install.html)). Ask before installing anything.
@@ -124,12 +124,12 @@ Repeat `doctor` until it passes. With Tectonic, the first build needs network ac
 
 ### Build and revise
 
-For a new resume, run `bunx resumectl@0.2.1 init <directory> --style sans`, then replace the placeholder content. `init` refuses to overwrite existing resume source or configuration. Use `--style serif` only if the user asks for it.
+For a new resume, run `bunx resumectl@0.2.2 init <directory> --style sans`, then replace the placeholder content. `init` refuses to overwrite existing resume source or configuration. Use `--style serif` only if the user asks for it.
 
 ```bash
-bunx resumectl@0.2.1 config show path/to/resume.tex --json
-bunx resumectl@0.2.1 build path/to/resume.tex --json
-bunx resumectl@0.2.1 check path/to/resume.tex --json
+bunx resumectl@0.2.2 config show path/to/resume.tex --json
+bunx resumectl@0.2.2 build path/to/resume.tex --json
+bunx resumectl@0.2.2 check path/to/resume.tex --json
 ```
 
 Read `config show` before editing:
